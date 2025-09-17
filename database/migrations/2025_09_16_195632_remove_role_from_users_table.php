@@ -12,16 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('phone')->nullable();
-            $table->string('location')->nullable();
-            $table->enum('role', ['admin', 'donor', 'receiver'])->default('receiver');
+            $table->dropColumn('role');
         });
     }
-    
+
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['phone', 'location', 'role']);
+            $table->enum('role', ['admin', 'donor', 'receiver'])->default('receiver');
         });
     }
 };
