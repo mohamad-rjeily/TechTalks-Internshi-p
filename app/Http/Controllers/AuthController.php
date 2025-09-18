@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Support\Facades\Hash;
+
 class AuthController extends Controller
 {
     public function registerPage()
@@ -19,14 +21,20 @@ class AuthController extends Controller
     }
     public function register(Request $request)
     {
-       $fields =  $request->validate([
+       $request->validate([
             'name' => ['required','string','max:50'],
             'email' => ['required','string','email','unique:users,email'],
             'password' => ['required','string','min:8','confirmed'],
             'phone' => ['required','string','max:30'],
             'location' => ['required','string'],
         ]);
-        $user = User::create($fields);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'phone' => $request->phone,
+            'location' => $request->location,
+        ]);
         Auth::login($user);
         event(new Registered($user));
         return redirect()->route('verification.notice');
