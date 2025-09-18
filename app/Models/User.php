@@ -55,8 +55,5 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
     {
         return $this->hasMany(Donation::class, 'recipient_id');
     }
-    public function donationsAsDonor()
-    {
-        return $this->hasMany(Donation::class, 'donor_id');
-    }
+
 }
