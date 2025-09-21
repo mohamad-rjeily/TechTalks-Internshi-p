@@ -126,3 +126,51 @@ Route::middleware('guest')->group(function(){
 
 });
 
+// Welcome route
+Route::get('/', function () {
+    return view('welcome');
+});
+
+// Admin routes (temporarily without auth for testing)
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+    
+    // Categories routes
+    Route::get('categories', [CategoryController::class, 'indexWeb'])->name('categories.index');
+    Route::get('categories/create', [CategoryController::class, 'create'])->name('categories.create');
+    Route::post('categories', [CategoryController::class, 'storeWeb'])->name('categories.store');
+    Route::get('categories/{id}', [CategoryController::class, 'showWeb'])->name('categories.show');
+    Route::get('categories/{id}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+    Route::put('categories/{id}', [CategoryController::class, 'updateWeb'])->name('categories.update');
+    Route::delete('categories/{id}', [CategoryController::class, 'destroyWeb'])->name('categories.destroy');
+    
+    // Medicines routes  
+    Route::get('medicines', [MedicineController::class, 'indexWeb'])->name('medicines.index');
+    Route::get('medicines/create', [MedicineController::class, 'create'])->name('medicines.create');
+    Route::post('medicines', [MedicineController::class, 'storeWeb'])->name('medicines.store');
+    Route::get('medicines/{id}', [MedicineController::class, 'showWeb'])->name('medicines.show');
+    Route::get('medicines/{id}/edit', [MedicineController::class, 'edit'])->name('medicines.edit');
+    Route::put('medicines/{id}', [MedicineController::class, 'updateWeb'])->name('medicines.update');
+    Route::delete('medicines/{id}', [MedicineController::class, 'destroyWeb'])->name('medicines.destroy');
+    
+    // Users routes
+    Route::get('users', [UserController::class, 'indexWeb'])->name('users.index');
+    Route::get('users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('users', [UserController::class, 'storeWeb'])->name('users.store');
+    Route::get('users/{id}', [UserController::class, 'showWeb'])->name('users.show');
+    Route::get('users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('users/{id}', [UserController::class, 'updateWeb'])->name('users.update');
+    Route::delete('users/{id}', [UserController::class, 'destroyWeb'])->name('users.destroy');
+    
+    // Reports routes
+    Route::get('reports', [ReportController::class, 'indexWeb'])->name('reports.index');
+    Route::get('reports/create', [ReportController::class, 'createWeb'])->name('reports.create');
+    Route::post('reports', [ReportController::class, 'storeWeb'])->name('reports.store');
+    Route::get('reports/{id}', [ReportController::class, 'showWeb'])->name('reports.show');
+    Route::get('reports/{id}/edit', [ReportController::class, 'editWeb'])->name('reports.edit');
+    Route::put('reports/{id}', [ReportController::class, 'updateWeb'])->name('reports.update');
+    Route::delete('reports/{id}', [ReportController::class, 'destroyWeb'])->name('reports.destroy');
+    
+    // Audit logs routes
+    Route::resource('audit-logs', AuditLogController::class)->only(['index', 'show']);
+});

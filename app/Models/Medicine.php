@@ -16,7 +16,6 @@ class Medicine extends Model
         'form',
         'strength',
         'condition_notes',
-        'photo_path',
     ];
 
     protected $casts = [

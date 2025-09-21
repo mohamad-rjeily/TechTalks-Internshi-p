@@ -91,13 +91,14 @@ class MedicineController extends Controller
 
     public function indexWeb()
     {
-        $medicines = Medicine::all();
-        return view('medicines.index', compact('medicines'));
+        $medicines = Medicine::with('category')->get();
+        return view('admin.layouts.medicines.index', compact('medicines'));
     }
 
     public function create()
     {
-        return view('medicines.create');
+        $categories = \App\Models\Category::all();
+        return view('admin.layouts.medicines.create', compact('categories'));
     }
 
     public function storeWeb(Request $request)
@@ -105,23 +106,28 @@ class MedicineController extends Controller
         $request->validate([
             'category_id'     => 'required|integer|exists:categories,id',
             'name'            => 'required|string|max:255',
+            'brand'           => 'nullable|string|max:255',
+            'form'            => 'nullable|string|max:255',
+            'strength'        => 'nullable|string|max:255',
+            'condition_notes' => 'nullable|string',
         ]);
 
         Medicine::create($request->all());
 
-        return redirect()->route('medicines.index')->with('success', 'Medicine created successfully!');
+        return redirect()->route('admin.medicines.index')->with('success', 'Medicine created successfully!');
     }
 
     public function showWeb($id)
     {
-        $medicine = Medicine::findOrFail($id);
-        return view('medicines.show', compact('medicine'));
+        $medicine = Medicine::with('category')->findOrFail($id);
+        return view('admin.layouts.medicines.show', compact('medicine'));
     }
 
     public function edit($id)
     {
         $medicine = Medicine::findOrFail($id);
-        return view('medicines.edit', compact('medicine'));
+        $categories = \App\Models\Category::all();
+        return view('admin.layouts.medicines.edit', compact('medicine', 'categories'));
     }
 
     public function updateWeb(Request $request, $id)
@@ -129,13 +135,17 @@ class MedicineController extends Controller
         $medicine = Medicine::findOrFail($id);
 
         $request->validate([
-            'category_id' => 'required|integer|exists:categories,id',
-            'name'        => 'required|string|max:255',
+            'category_id'     => 'required|integer|exists:categories,id',
+            'name'            => 'required|string|max:255',
+            'brand'           => 'nullable|string|max:255',
+            'form'            => 'nullable|string|max:255',
+            'strength'        => 'nullable|string|max:255',
+            'condition_notes' => 'nullable|string',
         ]);
 
         $medicine->update($request->all());
 
-        return redirect()->route('medicines.show', $medicine->id)->with('success', 'Medicine updated successfully!');
+        return redirect()->route('admin.medicines.show', $medicine->id)->with('success', 'Medicine updated successfully!');
     }
 
     public function destroyWeb($id)
@@ -143,6 +153,6 @@ class MedicineController extends Controller
         $medicine = Medicine::findOrFail($id);
         $medicine->delete();
 
-        return redirect()->route('medicines.index')->with('success', 'Medicine deleted successfully!');
+        return redirect()->route('admin.medicines.index')->with('success', 'Medicine deleted successfully!');
     }
 }

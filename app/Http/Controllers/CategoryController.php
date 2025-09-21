@@ -79,13 +79,13 @@ class CategoryController extends Controller
 
     public function indexWeb()
     {
-        $categories = Category::all();
-        return view('categories.index', compact('categories'));
+        $categories = Category::withCount('medicines')->get();
+        return view('admin.layouts.categories.index', compact('categories'));
     }
 
     public function create()
     {
-        return view('categories.create');
+        return view('admin.layouts.categories.create');
     }
 
     public function storeWeb(Request $request)
@@ -96,19 +96,19 @@ class CategoryController extends Controller
 
         Category::create($request->all());
 
-        return redirect()->route('categories.index')->with('success', 'Category created successfully!');
+        return redirect()->route('admin.categories.index')->with('success', 'Category created successfully!');
     }
 
     public function showWeb($id)
     {
-        $category = Category::findOrFail($id);
-        return view('categories.show', compact('category'));
+        $category = Category::withCount('medicines')->findOrFail($id);
+        return view('admin.layouts.categories.show', compact('category'));
     }
 
     public function edit($id)
     {
         $category = Category::findOrFail($id);
-        return view('categories.edit', compact('category'));
+        return view('admin.layouts.categories.edit', compact('category'));
     }
 
     public function updateWeb(Request $request, $id)
@@ -121,7 +121,7 @@ class CategoryController extends Controller
 
         $category->update($request->all());
 
-        return redirect()->route('categories.show', $category->id)->with('success', 'Category updated successfully!');
+        return redirect()->route('admin.categories.show', $category->id)->with('success', 'Category updated successfully!');
     }
 
     public function destroyWeb($id)
@@ -129,6 +129,6 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
         $category->delete();
 
-        return redirect()->route('categories.index')->with('success', 'Category deleted successfully!');
+        return redirect()->route('admin.categories.index')->with('success', 'Category deleted successfully!');
     }
 }
