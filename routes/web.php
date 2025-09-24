@@ -19,6 +19,7 @@ Route::delete('/users/{id}', [UserController::class, 'destroyWeb'])->name('users
 
 
 Route::get('/medicines', [MedicineController::class, 'indexWeb'])->name('medicines.index');
+Route::get('/browse-medicines', [MedicineController::class, 'browse'])->name('medicines.browse');
 Route::get('/medicines/create', [MedicineController::class, 'create'])->name('medicines.create');
 Route::post('/medicines', [MedicineController::class, 'storeWeb'])->name('medicines.store');
 Route::get('/medicines/{id}', [MedicineController::class, 'showWeb'])->name('medicines.show');

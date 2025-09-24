@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Donation;
+use App\Models\Medicine;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class DonationController extends Controller
@@ -17,29 +19,29 @@ class DonationController extends Controller
 
     public function create()
     {
-        return view('donations.create');
+        $medicines = Medicine::orderBy('name')->get();
+        return view('donations.create', compact('medicines'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'medicine_id' => 'required|exists:medicines,id',
-            'donor_id' => 'required|exists:users,id',
-            'recipient_id' => 'nullable|exists:users,id',
             'quantity' => 'required|integer',
-            'status' => 'required|in:available,unavailable',
             'expiry_date' => 'required|date',
             'notes' => 'nullable|string',
         ]);
 
-        $donation = Donation::create([
-            'medicine_id'   => $request->medicine_id,
-            'donor_id'      => $request->donor_id,
-            'recipient_id'  => $request->recipient_id,
-            'quantity'      => $request->quantity,
-            'status'        => $request->status,
-            'expiry_date'   => $request->expiry_date,
-            'notes'         => $request->notes,
+        $donorId = auth()->id() ?? optional(User::first())->id;
+
+        Donation::create([
+            'medicine_id'   => $validated['medicine_id'],
+            'donor_id'      => $donorId,
+            'recipient_id'  => null,
+            'quantity'      => $validated['quantity'],
+            'status'        => 'available',
+            'expiry_date'   => $validated['expiry_date'],
+            'notes'         => $validated['notes'] ?? null,
         ]);
 
         return redirect()->route('donations.index')->with('success', 'Donation created successfully!');

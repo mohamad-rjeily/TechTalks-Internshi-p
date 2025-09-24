@@ -19,24 +19,30 @@ class RequestController extends Controller
 
     public function createWeb()
     {
-        $medicines = Medicine::all();
-        $users = User::all();
-        return view('requests.create', compact('medicines', 'users'));
+        // Show all medicines (avoid filtering by a missing 'status' column in some DBs)
+        $medicines = Medicine::orderBy('name')->get();
+        return view('requests.create', compact('medicines'));
     }
 
     public function storeWeb(HttpRequest $request)
     {
         $validated = $request->validate([
             'medicine_id' => 'required|exists:medicines,id',
-            'requester_id' => 'required|exists:users,id',
-            'donor_id' => 'nullable|exists:users,id',
             'quantity_requested' => 'required|integer|min:1',
-            'quantity_remaining' => 'required|integer|min:0',
             'message' => 'nullable|string',
-            'status' => ['required', Rule::in(['pending','approved','rejected','cancelled'])],
         ]);
 
-        RequestModel::create($validated);
+        $requesterId = auth()->id() ?? optional(User::first())->id;
+
+        RequestModel::create([
+            'medicine_id' => $validated['medicine_id'],
+            'requester_id' => $requesterId,
+            'donor_id' => null,
+            // Store remaining as the requested amount initially
+            'quantity_remaining' => $validated['quantity_requested'],
+            'message' => $validated['message'] ?? null,
+            'status' => 'pending',
+        ]);
 
         return redirect()->route('requests.index')->with('success','Request created successfully');
     }
