@@ -18,7 +18,7 @@
 
 <!-- Statistics Cards -->
 <div class="row mb-4">
-    <div class="col-lg-3 col-md-6 mb-3">
+    <div class="col-lg-4 col-md-6 mb-3">
         <div class="stats-card">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-3 col-md-6 mb-3">
+    <div class="col-lg-4 col-md-6 mb-3">
         <div class="stats-card">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
@@ -44,20 +44,7 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-3 col-md-6 mb-3">
-        <div class="stats-card">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="text-muted mb-1">Admins</h6>
-                    <h4 class="mb-0 text-warning">{{ $users->where('role', 'admin')->count() }}</h4>
-                </div>
-                <div class="text-warning" style="font-size: 2rem;">
-                    <i class="fas fa-user-shield"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-6 mb-3">
+    <div class="col-lg-4 col-md-6 mb-3">
         <div class="stats-card">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
@@ -76,14 +63,7 @@
 <div class="card mb-4">
     <div class="card-body">
         <div class="row">
-            <div class="col-md-3">
-                <select class="form-select" id="roleFilter">
-                    <option value="">All Roles</option>
-                    <option value="admin">Admin</option>
-                    <option value="user">User</option>
-                </select>
-            </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <select class="form-select" id="verificationFilter">
                     <option value="">All Users</option>
                     <option value="verified">Verified</option>
@@ -120,7 +100,6 @@
                         <th>Email</th>
                         <th>Phone</th>
                         <th>Location</th>
-                        <th>Role</th>
                         <th>Status</th>
                         <th>Joined</th>
                         <th>Actions</th>
@@ -128,7 +107,7 @@
                 </thead>
                 <tbody>
                     @foreach($users as $user)
-                    <tr data-role="{{ $user->role }}" data-verified="{{ $user->email_verified_at ? 'verified' : 'unverified' }}">
+                    <tr data-verified="{{ $user->email_verified_at ? 'verified' : 'unverified' }}">
                         <td><span class="badge bg-primary">{{ $user->id }}</span></td>
                         <td>
                             <div class="d-flex align-items-center">
@@ -149,13 +128,6 @@
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->phone ?: 'N/A' }}</td>
                         <td>{{ $user->location ?: 'N/A' }}</td>
-                        <td>
-                            @if($user->role === 'admin')
-                            <span class="badge bg-danger">Admin</span>
-                            @else
-                            <span class="badge bg-secondary">User</span>
-                            @endif
-                        </td>
                         <td>
                             <span class="badge bg-success">Active</span>
                         </td>
@@ -231,13 +203,6 @@
                         <label for="userLocation" class="form-label">Location</label>
                         <input type="text" class="form-control" id="userLocation" name="location">
                     </div>
-                    <div class="mb-3">
-                        <label for="userRole" class="form-label">Role</label>
-                        <select class="form-select" id="userRole" name="role">
-                            <option value="user">User</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -276,10 +241,6 @@
                     <div class="col-6" id="viewUserLocation"></div>
                 </div>
                 <div class="row">
-                    <div class="col-6"><strong>Role:</strong></div>
-                    <div class="col-6" id="viewUserRole"></div>
-                </div>
-                <div class="row">
                     <div class="col-6"><strong>Status:</strong></div>
                     <div class="col-6" id="viewUserStatus"></div>
                 </div>
@@ -296,4 +257,132 @@
 </div>
 
 <!-- Edit User Modal -->
-<div class="modal
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-user-edit me-2"></i>Edit User
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="editUserForm">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editUserName" class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" id="editUserName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUserEmail" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="editUserEmail" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUserPassword" class="form-label">Password (Leave blank to keep current)</label>
+                        <input type="password" class="form-control" id="editUserPassword" name="password">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUserPhone" class="form-label">Phone</label>
+                        <input type="text" class="form-control" id="editUserPhone" name="phone">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUserLocation" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="editUserLocation" name="location">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Update User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete User Modal -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the user <strong id="deleteUserName"></strong>?</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-warning me-2"></i>
+                    This action cannot be undone. All user data will be permanently removed.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="POST" id="deleteUserForm" style="display: inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Delete User
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@push('scripts')
+<script>
+function viewUser(user) {
+    document.getElementById('viewUserInitial').textContent = user.name.charAt(0).toUpperCase();
+    document.getElementById('viewUserName').textContent = user.name;
+    document.getElementById('viewUserEmail').textContent = user.email;
+    document.getElementById('viewUserPhone').textContent = user.phone || 'N/A';
+    document.getElementById('viewUserLocation').textContent = user.location || 'N/A';
+    document.getElementById('viewUserStatus').innerHTML = '<span class="badge bg-success">Active</span>';
+    document.getElementById('viewUserJoined').textContent = new Date(user.created_at).toLocaleDateString();
+}
+
+function editUser(user) {
+    document.getElementById('editUserName').value = user.name;
+    document.getElementById('editUserEmail').value = user.email;
+    document.getElementById('editUserPhone').value = user.phone || '';
+    document.getElementById('editUserLocation').value = user.location || '';
+    document.getElementById('editUserForm').action = '{{ url("admin/users") }}/' + user.id;
+}
+
+function deleteUser(id, name) {
+    document.getElementById('deleteUserName').textContent = name;
+    document.getElementById('deleteUserForm').action = '{{ url("admin/users") }}/' + id;
+    
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteUserModal'));
+    deleteModal.show();
+}
+
+function clearFilters() {
+    document.getElementById('verificationFilter').value = '';
+    document.getElementById('searchUser').value = '';
+    applyFilters();
+}
+
+function applyFilters() {
+    const verificationFilter = document.getElementById('verificationFilter').value;
+    const searchFilter = document.getElementById('searchUser').value.toLowerCase();
+    const rows = document.querySelectorAll('#usersTable tbody tr');
+    
+    rows.forEach(row => {
+        const verificationMatch = !verificationFilter || row.dataset.verified === verificationFilter;
+        const textMatch = !searchFilter || row.textContent.toLowerCase().includes(searchFilter);
+        
+        row.style.display = verificationMatch && textMatch ? '' : 'none';
+    });
+}
+
+// Add event listeners
+document.getElementById('verificationFilter').addEventListener('change', applyFilters);
+document.getElementById('searchUser').addEventListener('input', applyFilters);
+</script>
+@endpush

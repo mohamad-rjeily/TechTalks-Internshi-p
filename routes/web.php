@@ -5,9 +5,16 @@ use App\Http\Controllers\ResetPasswordController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\UserController;
-
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DonationController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\RequestController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\AdminController;
 
 // Web routes for Blade views
+// These routes are not in the 'admin' group, they may be for a user-facing part of the site
 Route::get('/users', [UserController::class, 'indexWeb'])->name('users.index');
 Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
 Route::post('/users', [UserController::class, 'storeWeb'])->name('users.store');
@@ -15,8 +22,6 @@ Route::get('/users/{id}', [UserController::class, 'showWeb'])->name('users.show'
 Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
 Route::put('/users/{id}', [UserController::class, 'updateWeb'])->name('users.update');
 Route::delete('/users/{id}', [UserController::class, 'destroyWeb'])->name('users.destroy');
-
-
 
 Route::get('/medicines', [MedicineController::class, 'indexWeb'])->name('medicines.index');
 Route::get('/medicines/create', [MedicineController::class, 'create'])->name('medicines.create');
@@ -26,8 +31,6 @@ Route::get('/medicines/{id}/edit', [MedicineController::class, 'edit'])->name('m
 Route::put('/medicines/{id}', [MedicineController::class, 'updateWeb'])->name('medicines.update');
 Route::delete('/medicines/{id}', [MedicineController::class, 'destroyWeb'])->name('medicines.destroy');
 
-use App\Http\Controllers\CategoryController;
-
 Route::get('/categories', [CategoryController::class, 'indexWeb'])->name('categories.index');
 Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
 Route::post('/categories', [CategoryController::class, 'storeWeb'])->name('categories.store');
@@ -35,7 +38,6 @@ Route::get('/categories/{id}', [CategoryController::class, 'showWeb'])->name('ca
 Route::get('/categories/{id}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
 Route::put('/categories/{id}', [CategoryController::class, 'updateWeb'])->name('categories.update');
 Route::delete('/categories/{id}', [CategoryController::class, 'destroyWeb'])->name('categories.destroy');
-use App\Http\Controllers\DonationController;
 
 Route::prefix('donations')->group(function() {
     Route::get('/', [DonationController::class, 'index'])->name('donations.index');
@@ -45,7 +47,6 @@ Route::prefix('donations')->group(function() {
     Route::put('/{donation}', [DonationController::class, 'update'])->name('donations.update');
     Route::delete('/{donation}', [DonationController::class, 'destroy'])->name('donations.destroy');
 });
-use App\Http\Controllers\NotificationController;
 
 Route::prefix('notifications')->group(function () {
     Route::get('/', [NotificationController::class, 'indexWeb'])->name('notifications.index');
@@ -56,7 +57,6 @@ Route::prefix('notifications')->group(function () {
     Route::put('/{id}', [NotificationController::class, 'updateWeb'])->name('notifications.update');
     Route::delete('/{id}', [NotificationController::class, 'destroyWeb'])->name('notifications.destroy');
 });
-use App\Http\Controllers\RequestController;
 
 Route::prefix('requests')->group(function(){
     Route::get('/', [RequestController::class,'indexWeb'])->name('requests.index');
@@ -67,7 +67,6 @@ Route::prefix('requests')->group(function(){
     Route::put('/{id}', [RequestController::class,'updateWeb'])->name('requests.update');
     Route::delete('/{id}', [RequestController::class,'destroyWeb'])->name('requests.destroy');
 });
-use App\Http\Controllers\ReportController;
 
 Route::prefix('reports')->group(function () {
     Route::get('/', [ReportController::class, 'indexWeb'])->name('reports.index');
@@ -78,17 +77,8 @@ Route::prefix('reports')->group(function () {
     Route::put('/{id}', [ReportController::class, 'updateWeb'])->name('reports.update');
     Route::delete('/{id}', [ReportController::class, 'destroyWeb'])->name('reports.destroy');
 });
-use App\Http\Controllers\AuditLogController;
 
-Route::get('/audit_logs', [AuditLogController::class, 'indexWeb'])->name('audit_logs.index');
-Route::get('/audit_logs/create', [AuditLogController::class, 'createWeb'])->name('audit_logs.create');
-Route::post('/audit_logs', [AuditLogController::class, 'storeWeb'])->name('audit_logs.store');
-Route::get('/audit_logs/{id}', [AuditLogController::class, 'showWeb'])->name('audit_logs.show');
-Route::get('/audit_logs/{id}/edit', [AuditLogController::class, 'editWeb'])->name('audit_logs.edit');
-Route::put('/audit_logs/{id}', [AuditLogController::class, 'updateWeb'])->name('audit_logs.update');
-Route::delete('/audit_logs/{id}', [AuditLogController::class, 'destroyWeb'])->name('audit_logs.destroy');
-use App\Http\Controllers\AdminController;
-
+// Admin Authentication Routes
 Route::prefix('admins')->group(function() {
     Route::get('/', [AdminController::class, 'index'])->name('admins.index');
     Route::get('/create', [AdminController::class, 'create'])->name('admins.create');
@@ -98,12 +88,9 @@ Route::prefix('admins')->group(function() {
     Route::delete('/delete/{id}', [AdminController::class, 'destroy'])->name('admins.destroy');
 });
 
-
-
-
+// Welcome and Auth Routes
 Route::get('/registerpage',[AuthController::class,'registerPage'])->name('registerPage');
 Route::get('/loginpage',[AuthController::class,'loginPage'])->name('loginPage');
-
 Route::post('/register',[AuthController::class,'register'])->name('register');
 Route::post('/login',[AuthController::class,'login'])->name('login');
 Route::middleware('checkUser')->group(function(){
@@ -126,13 +113,22 @@ Route::middleware('guest')->group(function(){
 
 });
 
-// Welcome route
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Admin routes (temporarily without auth for testing)
-Route::prefix('admin')->name('admin.')->group(function () {
+// Admin routes
+
+
+// Replace your admin routes section with this:
+
+// Admin Authentication Routes (No middleware - public access)
+Route::get('/admin/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
+Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.submit');
+Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
+
+// Admin routes (Protected by AdminAuth middleware)
+Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     
     // Categories routes
@@ -170,7 +166,50 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('reports/{id}/edit', [ReportController::class, 'editWeb'])->name('reports.edit');
     Route::put('reports/{id}', [ReportController::class, 'updateWeb'])->name('reports.update');
     Route::delete('reports/{id}', [ReportController::class, 'destroyWeb'])->name('reports.destroy');
+    Route::patch('reports/{id}/resolve', [ReportController::class, 'resolveWeb'])->name('reports.resolve');
     
     // Audit logs routes
-    Route::resource('audit-logs', AuditLogController::class)->only(['index', 'show']);
+    Route::get('audit-logs', [AuditLogController::class, 'indexWeb'])->name('audit-logs.index');
+
+    // Categories routes
+    Route::get('categories', [CategoryController::class, 'indexWeb'])->name('categories.index');
+    Route::get('categories/create', [CategoryController::class, 'create'])->name('categories.create');
+    Route::post('categories', [CategoryController::class, 'storeWeb'])->name('categories.store');
+    Route::get('categories/{id}', [CategoryController::class, 'showWeb'])->name('categories.show');
+    Route::get('categories/{id}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+    Route::put('categories/{id}', [CategoryController::class, 'updateWeb'])->name('categories.update');
+    Route::delete('categories/{id}', [CategoryController::class, 'destroyWeb'])->name('categories.destroy');
+    
+    // Medicines routes  
+    Route::get('medicines', [MedicineController::class, 'indexWeb'])->name('medicines.index');
+    Route::get('medicines/create', [MedicineController::class, 'create'])->name('medicines.create');
+    Route::post('medicines', [MedicineController::class, 'storeWeb'])->name('medicines.store');
+    Route::get('medicines/{id}', [MedicineController::class, 'showWeb'])->name('medicines.show');
+    Route::get('medicines/{id}/edit', [MedicineController::class, 'edit'])->name('medicines.edit');
+    Route::put('medicines/{id}', [MedicineController::class, 'updateWeb'])->name('medicines.update');
+    Route::delete('medicines/{id}', [MedicineController::class, 'destroyWeb'])->name('medicines.destroy');
+    
+    // Users routes
+    Route::get('users', [UserController::class, 'indexWeb'])->name('users.index');
+    Route::get('users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('users', [UserController::class, 'storeWeb'])->name('users.store');
+    Route::get('users/{id}', [UserController::class, 'showWeb'])->name('users.show');
+    Route::get('users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('users/{id}', [UserController::class, 'updateWeb'])->name('users.update');
+    Route::delete('users/{id}', [UserController::class, 'destroyWeb'])->name('users.destroy');
+    
+    // Reports routes
+    Route::get('reports', [ReportController::class, 'indexWeb'])->name('reports.index');
+    Route::get('reports/create', [ReportController::class, 'createWeb'])->name('reports.create');
+    Route::post('reports', [ReportController::class, 'storeWeb'])->name('reports.store');
+    Route::get('reports/{id}', [ReportController::class, 'showWeb'])->name('reports.show');
+    Route::get('reports/{id}/edit', [ReportController::class, 'editWeb'])->name('reports.edit');
+    Route::put('reports/{id}', [ReportController::class, 'updateWeb'])->name('reports.update');
+    Route::delete('reports/{id}', [ReportController::class, 'destroyWeb'])->name('reports.destroy');
+
+    // NEW: Dedicated route to resolve a report with a PATCH request
+    Route::patch('reports/{id}/resolve', [ReportController::class, 'resolveWeb'])->name('reports.resolve');
+    
+    // Audit logs routes - The Corrected Line
+    Route::get('audit-logs', [AuditLogController::class, 'indexWeb'])->name('audit-logs.index');
 });
