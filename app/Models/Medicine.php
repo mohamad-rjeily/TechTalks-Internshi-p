@@ -29,4 +29,19 @@ class Medicine extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function requests()
+    {
+       return $this->hasMany(Request::class);
+   }
+
+    public function donations()
+    {
+       return $this->hasMany(Donation::class);
+    }
+
 }
