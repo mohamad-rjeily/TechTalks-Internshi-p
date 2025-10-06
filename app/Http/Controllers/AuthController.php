@@ -49,7 +49,7 @@ class AuthController extends Controller
     public function verifyEmail(EmailVerificationRequest $request)
     {
         $request->fulfill();
-        return redirect()->route('users.index');
+        return view('dashboard');
     }
 
 
@@ -65,7 +65,7 @@ class AuthController extends Controller
         ]);
         if(Auth::attempt($fields))
         {
-            return redirect()->route('users.index');
+            return view('dashboard');
         }
         return redirect()->back()->with('error','Wrong Email or Password');
     }

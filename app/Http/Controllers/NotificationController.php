@@ -68,6 +68,22 @@ class NotificationController extends Controller
         return redirect()->route('notifications.index')->with('success', 'Notification deleted successfully');
     }
 
+    public function markAsReadWeb($id)
+{
+    $notification = Notification::findOrFail($id);
+    if (!$notification->read_at) {
+        $notification->read_at = now();
+        $notification->save();
+    }
+
+    return response()->json([
+        'status' => 'success',
+        'read_at' => $notification->read_at
+    ]);
+
+}
+
+
     // ========================= API =========================
     public function indexApi($userId)
     {
