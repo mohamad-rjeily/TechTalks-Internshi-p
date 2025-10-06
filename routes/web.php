@@ -88,6 +88,7 @@ Route::get('/audit_logs/{id}/edit', [AuditLogController::class, 'editWeb'])->nam
 Route::put('/audit_logs/{id}', [AuditLogController::class, 'updateWeb'])->name('audit_logs.update');
 Route::delete('/audit_logs/{id}', [AuditLogController::class, 'destroyWeb'])->name('audit_logs.destroy');
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileSettingsController;
 
 Route::prefix('admins')->group(function() {
@@ -107,6 +108,8 @@ Route::get('/loginpage',[AuthController::class,'loginPage'])->name('loginPage');
 
 Route::post('/register',[AuthController::class,'register'])->name('register');
 Route::post('/login',[AuthController::class,'login'])->name('login');
+
+Route::get('/dashboard', [DashboardController::class, 'indexWeb'])->name('dashboard');
 Route::middleware('checkUser')->group(function(){
     Route::get('/admin',[AuthController::class,'adminDashboard'])->name('admin');
 });

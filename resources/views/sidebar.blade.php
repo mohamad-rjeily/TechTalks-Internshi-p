@@ -24,7 +24,7 @@
         <i data-lucide="bar-chart-2" class="mr-3 sidebar-icon"></i>
         <span class="sidebar-text">Reports</span>
       </a>
-      <a href="#" class="sidebar-link flex items-center p-3 rounded-lg">
+      <a href="{{ route('profile_settings') }}" class="sidebar-link flex items-center p-3 rounded-lg">
         <i data-lucide="settings" class="mr-3 sidebar-icon"></i>
         <span class="sidebar-text">Settings</span>
       </a>

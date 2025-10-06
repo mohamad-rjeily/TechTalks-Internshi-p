@@ -64,17 +64,15 @@ public function profileSettings(Request $request)
     $user = Auth::user();
 
     $request->validate([
-        // Note: La validation 'sometimes' n'est plus nécessaire car nous vérifions l'existence avec has()
         'profile_visibility' => ['required', 'string', 'in:public,private'],
     ]);
 
-    // L'astuce est ici : on utilise $request->has() pour les booleans
     $user->update([
-        'newsletter_opt_in' => $request->has('newsletter_opt_in'), // <-- Correction ici
+        'newsletter_opt_in' => $request->has('newsletter_opt_in'),
         'profile_visibility' => $request->profile_visibility,
     ]);
 
-    // Redirige vers la page des paramètres et active l'onglet "privacy"
+
     return redirect()->route('profile_settings', ['tab' => 'privacy'])->with('privacy_status', 'Privacy settings updated successfully.');
 }
 }
