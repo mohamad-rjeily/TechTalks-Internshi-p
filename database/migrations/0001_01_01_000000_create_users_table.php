@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('location')->nullable();
             $table->enum('role', ['user', 'admin'])->default('user');
+            $table->boolean('newsletter_opt_in')->default(false);
+            $table->string('profile_visibility')->default('public');
             $table->rememberToken();
             $table->timestamps();
         });

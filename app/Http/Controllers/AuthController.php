@@ -49,7 +49,7 @@ class AuthController extends Controller
     public function verifyEmail(EmailVerificationRequest $request)
     {
         $request->fulfill();
-        return redirect()->route('home');
+        return redirect()->route('users.index');
     }
 
 
@@ -65,7 +65,7 @@ class AuthController extends Controller
         ]);
         if(Auth::attempt($fields))
         {
-            return redirect()->route('home');
+            return redirect()->route('users.index');
         }
         return redirect()->back()->with('error','Wrong Email or Password');
     }
@@ -75,8 +75,8 @@ class AuthController extends Controller
         Auth::logout();
         return redirect()->route('loginPage');
     }
-    public function adminDashboard()
-    {
-        return view('admindashboard');
-    }
+    // public function adminDashboard()
+    // {
+    //     return view('admindashboard');
+    // }
 }

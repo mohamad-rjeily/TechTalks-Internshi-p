@@ -156,4 +156,9 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.index')->with('success', 'User deleted successfully!');
     }
+    public function showUser(User $user) // Laravel passe l'objet User trouvé par l'ID
+    {
+        return view('user.showprofile', ['profileUser' => $user]);
+    }
 }
+

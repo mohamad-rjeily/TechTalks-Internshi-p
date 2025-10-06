@@ -12,7 +12,7 @@ use App\Http\Controllers\RequestController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\AdminController;
-
+use App\Http\Controllers\ProfileSettingsController;
 // Web routes for Blade views
 // These routes are not in the 'admin' group, they may be for a user-facing part of the site
 Route::get('/users', [UserController::class, 'indexWeb'])->name('users.index');
@@ -77,6 +77,18 @@ Route::prefix('reports')->group(function () {
     Route::put('/{id}', [ReportController::class, 'updateWeb'])->name('reports.update');
     Route::delete('/{id}', [ReportController::class, 'destroyWeb'])->name('reports.destroy');
 });
+
+
+
+Route::get('/audit_logs', [AuditLogController::class, 'indexWeb'])->name('audit_logs.index');
+Route::get('/audit_logs/create', [AuditLogController::class, 'createWeb'])->name('audit_logs.create');
+Route::post('/audit_logs', [AuditLogController::class, 'storeWeb'])->name('audit_logs.store');
+Route::get('/audit_logs/{id}', [AuditLogController::class, 'showWeb'])->name('audit_logs.show');
+Route::get('/audit_logs/{id}/edit', [AuditLogController::class, 'editWeb'])->name('audit_logs.edit');
+Route::put('/audit_logs/{id}', [AuditLogController::class, 'updateWeb'])->name('audit_logs.update');
+Route::delete('/audit_logs/{id}', [AuditLogController::class, 'destroyWeb'])->name('audit_logs.destroy');
+
+
 
 // Admin Authentication Routes
 Route::prefix('admins')->group(function() {
@@ -213,3 +225,11 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     // Audit logs routes - The Corrected Line
     Route::get('audit-logs', [AuditLogController::class, 'indexWeb'])->name('audit-logs.index');
 });
+Route::middleware('auth')->group(function(){
+    Route::get('/profile_settings',[ProfileSettingsController::class,'profileSettings'])->name('profile_settings');
+    Route::post('/update/user/info',[ProfileSettingsController::class,'updateProfileInformation'])->name('update_profile_info');
+    Route::post('/delete_account',[ProfileSettingsController::class,'deleteUserAccount'])->name('delete_user_account');
+    Route::post('/change_password',[ProfileSettingsController::class,'changePassword'])->name('change_password');
+});
+Route::post('/update_privacy_settings', [ProfileSettingsController::class, 'updatePrivacySettings'])->name('update_privacy_settings');
+Route::get('/userprofile/{user}', [UserController::class, 'showUser'])->name('user.show');

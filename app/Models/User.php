@@ -19,6 +19,8 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
         'phone',
         'location',
         'role',
+        'newsletter_opt_in',
+        'profile_visibility',
     ];
 
     protected $hidden = [
