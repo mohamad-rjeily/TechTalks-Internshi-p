@@ -59,6 +59,11 @@ Route::prefix('notifications')->group(function () {
 });
 use App\Http\Controllers\RequestController;
 
+// Main requests page
+Route::get('/requestsPage', function () {
+        return view('requests');
+    })->name('requests')->middleware('auth');
+
 Route::prefix('requests')->group(function(){
     Route::get('/', [RequestController::class,'indexWeb'])->name('requests.index');
     Route::get('/create', [RequestController::class,'createWeb'])->name('requests.create');

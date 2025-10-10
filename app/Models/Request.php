@@ -13,7 +13,6 @@ class Request extends Model
         'medicine_id',
         'requester_id',
         'donor_id',
-        'quantity_requested',
         'quantity_remaining',
         'message',
         'status',
