@@ -165,6 +165,7 @@
                                 <th>Donor</th>
                                 <th>Quantity</th>
                                 <th>Expiry</th>
+                                <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -175,9 +176,15 @@
                                     <td>{{ $don->donor?->name ?? '—' }}</td>
                                     <td class="fw-semibold text-success">{{ $don->quantity }}</td>
                                     <td>{{ optional($don->expiry_date)->format('Y-m-d') }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-success"
+                                                wire:click="openRequestModal({{ $don->id }})">
+                                            <i class="bi bi-heart me-1"></i> Request
+                                        </button>
+                                    </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="5" class="text-center text-muted">No pending donations</td></tr>
+                                <tr><td colspan="6" class="text-center text-muted">No pending donations</td></tr>
                             @endforelse
                             </tbody>
                         </table>
@@ -197,5 +204,10 @@
     {{-- EDIT MODAL --}}
     @if ($showEditModal)
         @include('livewire.partials.edit-donation-modal')
+    @endif
+
+    {{-- REQUEST MODAL --}}
+    @if ($showRequestModal)
+        @include('livewire.partials.request-donation-modal')
     @endif
 </div>

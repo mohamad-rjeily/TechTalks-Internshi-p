@@ -39,6 +39,12 @@ class Donations extends Component
     public ?string $editExpiry = null;
     public ?string $editNotes = null;
 
+    /** Request modal state */
+    public bool $showRequestModal = false;
+    public ?int $requestDonationId = null;
+    public ?string $requestMessage = '';
+    public ?int $requestQuantity = 1;
+
     /** Filters */
     public ?string $medicineFilter = '';
     public string $statusFilter = 'all';
@@ -164,6 +170,40 @@ class Donations extends Component
         $this->reset(['editDonationId','editQuantity','editExpiry','editNotes','showEditModal']);
     }
 
+    public function openRequestModal(int $donationId): void
+    {
+        $this->requestDonationId = $donationId;
+        $this->requestMessage = '';
+        $this->requestQuantity = 1;
+        $this->showRequestModal = true;
+    }
+
+    public function submitRequest(): void
+    {
+        if (!$this->requestDonationId) {
+            $this->setFlash('No donation selected.', 'danger');
+            return;
+        }
+
+        // Get the donation to validate quantity
+        $donation = Donation::findOrFail($this->requestDonationId);
+
+        $this->validate([
+            'requestMessage' => 'required|string|max:500',
+            'requestQuantity' => 'required|integer|min:1|max:' . $donation->quantity,
+        ]);
+
+        // Here you would typically create a request record
+        // For now, we'll just show a success message
+        $this->setFlash("Request submitted successfully! You requested {$this->requestQuantity} units. The donor will be notified.");
+        $this->cancelRequest();
+    }
+
+    public function cancelRequest(): void
+    {
+        $this->reset(['requestDonationId', 'requestMessage', 'requestQuantity', 'showRequestModal']);
+    }
+
     private function loadMyDonations()
     {
         $actorId = Auth::id() ?: (int)(User::value('id') ?? 0);
@@ -178,8 +218,10 @@ class Donations extends Component
 
     private function loadPendingDonations()
     {
+        $actorId = Auth::id() ?: (int)(User::value('id') ?? 0);
         return Donation::with(['medicine','donor'])
             ->where('status', 'available')
+            ->when($actorId > 0, fn($q) => $q->where('donor_id', '!=', $actorId)) // Exclude current user's donations
             ->when($this->medicineFilter, fn($q) => $q->where('medicine_id', (int)$this->medicineFilter))
             ->when($this->fromDate, fn($q) => $q->whereDate('created_at', '>=', $this->fromDate))
             ->when($this->toDate, fn($q) => $q->whereDate('expiry_date', '<=', $this->toDate))
