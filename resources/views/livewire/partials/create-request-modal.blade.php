@@ -72,4 +72,12 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('openCreateRequest', () => {
+                const el = document.getElementById('createRequestModal');
+                if (el) bootstrap.Modal.getOrCreateInstance(el).show();
+            });
+        });
+    </script>
 </div>

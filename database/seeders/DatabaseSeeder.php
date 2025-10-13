@@ -54,5 +54,8 @@ class DatabaseSeeder extends Seeder
                 ]
             );
         }
+
+        // Seed demo requests/users if missing
+        $this->call(RequestDemoSeeder::class);
     }
 }

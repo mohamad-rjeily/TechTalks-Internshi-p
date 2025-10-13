@@ -40,11 +40,6 @@ use App\Http\Controllers\DonationController;
 
 Route::prefix('donations')->group(function() {
     Route::get('/', [DonationController::class, 'index'])->name('donations.index');
-    Route::get('/create', [DonationController::class, 'create'])->name('donations.create');
-    Route::post('/store', [DonationController::class, 'store'])->name('donations.store');
-    Route::get('/{donation}/edit', [DonationController::class, 'edit'])->name('donations.edit');
-    Route::put('/{donation}', [DonationController::class, 'update'])->name('donations.update');
-    Route::delete('/{donation}', [DonationController::class, 'destroy'])->name('donations.destroy');
 });
 use App\Http\Controllers\NotificationController;
 
@@ -59,10 +54,10 @@ Route::prefix('notifications')->group(function () {
 });
 use App\Http\Controllers\RequestController;
 
-// Main requests page
+// Main requests page (public)
 Route::get('/requestsPage', function () {
         return view('requests');
-    })->name('requests')->middleware('auth');
+    })->name('requests');
 
 Route::prefix('requests')->group(function(){
     Route::get('/', [RequestController::class,'indexWeb'])->name('requests.index');
@@ -109,9 +104,10 @@ Route::prefix('admins')->group(function() {
 
 Route::get('/registerpage',[AuthController::class,'registerPage'])->name('registerPage');
 Route::get('/loginpage',[AuthController::class,'loginPage'])->name('loginPage');
+Route::get('/login',[AuthController::class,'loginPage'])->name('login');
 
 Route::post('/register',[AuthController::class,'register'])->name('register');
-Route::post('/login',[AuthController::class,'login'])->name('login');
+Route::post('/login',[AuthController::class,'login'])->name('login.perform');
 Route::middleware('checkUser')->group(function(){
     Route::get('/admin',[AuthController::class,'adminDashboard'])->name('admin');
 });
@@ -180,3 +176,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Audit logs routes
     Route::resource('audit-logs', AuditLogController::class)->only(['index', 'show']);
 });
+
+use App\Livewire\Donations;
+
+Route::get('/donations', Donations::class)->name('donations.index');

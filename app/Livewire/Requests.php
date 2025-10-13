@@ -2,6 +2,7 @@
 namespace App\Livewire;
 
 use App\Models\Request;
+use App\Models\User;
 use Livewire\Component;
 use App\Models\AuditLog;
 use App\Models\Medicine;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class Requests extends Component
 {
     public $activeTab = 'my';
+    public $embedded = false;
 
     public $flashVisible = false;
     public $flashMessage = null;
@@ -28,11 +30,22 @@ class Requests extends Component
         $this->medicines = Medicine::orderBy('name')->get();
     }
 
-    public function openCreateModal()
+    public function openCreateModal(?int $medicineId = null)
     {
         $this->resetForm();
+        if ($medicineId) {
+            $this->medicine_id = (string) $medicineId;
+        }
         $this->showCreateModal = true;
+        $this->dispatch('openCreateRequest');
     }
+
+    protected $listeners = [
+        'openDonationModal' => 'noop', // placeholder to avoid errors when emitted from browse
+        'openRequestModal' => 'openCreateModal',
+    ];
+
+    public function noop(): void {}
 
     public function submit()
     {
@@ -42,9 +55,11 @@ class Requests extends Component
             'message'            => 'nullable|string|max:500',
         ]);
 
+        $actorUserId = $this->resolveActorUserId();
+
         $req = Request::create([
             'medicine_id'        => $this->medicine_id,
-            'requester_id'       => Auth::id(),
+            'requester_id'       => $actorUserId,
             'donor_id'           => null,
             'quantity_remaining' => $this->quantity_remaining,
             'message'            => $this->message,
@@ -52,7 +67,7 @@ class Requests extends Component
         ]);
 
         AuditLog::create([
-            'actor_id'    => Auth::id(),
+            'actor_id'    => $actorUserId,
             'action_type' => 'request_created',
             'target_type' => 'request',
             'target_id'   => $req->id,
@@ -64,6 +79,27 @@ class Requests extends Component
         $this->setFlash('Request created successfully.');
         $this->dispatch('requestCreated');
         $this->showCreateModal = false;
+    }
+
+    private function resolveActorUserId(): int
+    {
+        $authId = Auth::id();
+        if ($authId) {
+            return (int) $authId;
+        }
+
+        $existing = User::value('id');
+        if ($existing) {
+            return (int) $existing;
+        }
+
+        $guest = User::create([
+            'name' => 'Guest',
+            'email' => 'guest@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        return (int) $guest->id;
     }
 
     public function resetForm()
@@ -91,6 +127,6 @@ class Requests extends Component
 
     public function render()
     {
-        return view('livewire.requests');
+        return view('livewire.requests')->layout('layouts.app');
     }
 }

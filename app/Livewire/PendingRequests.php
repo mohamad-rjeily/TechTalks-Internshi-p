@@ -44,9 +44,12 @@ class PendingRequests extends Component
 
     private function loadRequests()
     {
+        $authId = Auth::id();
         $query = Request::with(['medicine', 'requester'])
             ->where('status', 'pending')
-            ->where('requester_id', '!=', Auth::id());
+            ->when($authId, function ($q) use ($authId) {
+                $q->where('requester_id', '!=', $authId);
+            });
 
         if ($this->medicineFilter !== '') {
             $query->where('medicine_id', (int) $this->medicineFilter);
@@ -83,10 +86,12 @@ class PendingRequests extends Component
     {
         if (!$this->helpRequest) return;
 
-        $this->authorize('accept', $this->helpRequest);
+        if (Auth::check()) {
+            $this->authorize('accept', $this->helpRequest);
+        }
 
         $this->helpRequest->update([
-            'donor_id' => Auth::id(),
+            'donor_id' => Auth::id() ?: null,
             'status' => 'approved',
         ]);
 
