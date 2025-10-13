@@ -115,6 +115,11 @@ Route::middleware(['admin.auth'])->prefix('admin')->name('admin.')->group(functi
         Route::delete('/{id}', [RequestController::class,'destroyWeb'])->name('destroy');
     });
 
+    // Main requests page
+    Route::get('/requestsPage', function () {
+        return view('requests');
+    })->name('requests')->middleware('auth');
+
     // Reports Management (Admin Views: admin.reports.*)
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/', [ReportController::class, 'indexWeb'])->name('index');
