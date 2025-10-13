@@ -115,10 +115,7 @@ Route::middleware(['admin.auth'])->prefix('admin')->name('admin.')->group(functi
         Route::delete('/{id}', [RequestController::class,'destroyWeb'])->name('destroy');
     });
 
-    // Main requests page
-    Route::get('/requestsPage', function () {
-        return view('requests');
-    })->name('requests')->middleware('auth');
+   
 
     // Reports Management (Admin Views: admin.reports.*)
     Route::prefix('reports')->name('reports.')->group(function () {
@@ -173,6 +170,11 @@ Route::middleware(['auth'])->group(function () {
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
+
+    // Main requests page
+    Route::get('/requestsPage', function () {
+        return view('requests');
+    })->name('requests')->middleware('auth');
 
 // =========================================================================
 // PASSWORD RESET ROUTES (No middleware)
