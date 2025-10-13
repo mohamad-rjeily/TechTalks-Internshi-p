@@ -13,7 +13,7 @@
     @livewireStyles
 </head>
 
-<body class="bg-gradient-to-tr from-green-50 via-green-50 to-white min-h-screen fixed">
+<body>
 
   <div class="flex min-h-screen">
     {{-- Sidebar --}}
