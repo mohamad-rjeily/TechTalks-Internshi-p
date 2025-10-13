@@ -24,6 +24,8 @@
     </div>
 </div>
 
+---
+
 <!-- Statistics Cards -->
 <div class="row mb-4">
     <div class="col-lg-3 col-md-6 mb-3">
@@ -80,31 +82,23 @@
     </div>
 </div>
 
+---
+
 <!-- Filter Section -->
 <div class="card mb-4">
     <div class="card-body">
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <select class="form-select" id="statusFilter">
                     <option value="">All Status</option>
                     <option value="open">Open</option>
                     <option value="resolved">Resolved</option>
                 </select>
             </div>
-            <div class="col-md-3">
-                <select class="form-select" id="reasonFilter">
-                    <option value="">All Reasons</option>
-                    <option value="spam">Spam</option>
-                    <option value="abuse">Abuse</option>
-                    <option value="inappropriate">Inappropriate Content</option>
-                    <option value="fraud">Fraud</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-            <div class="col-md-4">
+            <div class="col-md-5">
                 <input type="text" class="form-control" id="searchReport" placeholder="Search reports...">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
                     <i class="fas fa-times"></i> Clear
                 </button>
@@ -112,6 +106,8 @@
         </div>
     </div>
 </div>
+
+---
 
 <!-- Reports Table -->
 <div class="card">
@@ -142,7 +138,7 @@
                         <td>
                             <div class="d-flex align-items-center">
                                 <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
-                                     style="width: 32px; height: 32px;">
+                                    style="width: 32px; height: 32px;">
                                     {{ strtoupper(substr($report->reporter->name ?? 'U', 0, 1)) }}
                                 </div>
                                 <div>
@@ -155,15 +151,23 @@
                             <span class="badge bg-info">Target ID: {{ $report->target_id }}</span>
                         </td>
                         <td>
-                            <span class="badge 
-                                @switch($report->reason)
-                                    @case('spam') bg-warning @break
-                                    @case('abuse') bg-danger @break
-                                    @case('inappropriate') bg-warning @break
-                                    @case('fraud') bg-danger @break
-                                    @default bg-secondary
-                                @endswitch
-                            ">
+                            <!-- Reason Badge Logic -->
+                            @php
+                                $badgeClass = 'bg-secondary';
+                                switch($report->reason) {
+                                    case 'spam':
+                                    case 'inappropriate':
+                                        $badgeClass = 'bg-warning';
+                                        break;
+                                    case 'abuse':
+                                    case 'fraud':
+                                        $badgeClass = 'bg-danger';
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            @endphp
+                            <span class="badge {{ $badgeClass }}">
                                 {{ ucfirst($report->reason) }}
                             </span>
                         </td>
@@ -214,6 +218,8 @@
         @endif
     </div>
 </div>
+
+---
 
 <!-- View Report Modal -->
 <div class="modal fade" id="viewReportModal" tabindex="-1">
@@ -268,6 +274,8 @@
     </div>
 </div>
 
+---
+
 <!-- Resolve Report Modal -->
 <div class="modal fade" id="resolveReportModal" tabindex="-1">
     <div class="modal-dialog">
@@ -280,7 +288,7 @@
             </div>
             <form method="POST" id="resolveReportForm">
                 @csrf
-                @method('PUT')
+                @method('PATCH')
                 <div class="modal-body">
                     <input type="hidden" name="status" value="resolved">
                     <div class="alert alert-info">
@@ -290,7 +298,7 @@
                     <div class="mb-3">
                         <label for="resolveNote" class="form-label">Admin Note (Optional)</label>
                         <textarea class="form-control" id="resolveNote" name="admin_note" rows="3" 
-                                  placeholder="Add a note about how this report was resolved..."></textarea>
+                                    placeholder="Add a note about how this report was resolved..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -301,8 +309,11 @@
                 </div>
             </form>
         </div>
+        
     </div>
 </div>
+
+---
 
 <!-- Add Note Modal -->
 <div class="modal fade" id="addNoteModal" tabindex="-1">
@@ -321,7 +332,7 @@
                     <div class="mb-3">
                         <label for="adminNote" class="form-label">Admin Note</label>
                         <textarea class="form-control" id="adminNote" name="admin_note" rows="4" 
-                                  placeholder="Add your note or reply here..."></textarea>
+                                    placeholder="Add your note or reply here..."></textarea>
                         <div class="form-text">This note will be visible to other administrators.</div>
                     </div>
                 </div>
@@ -351,7 +362,8 @@ function viewReport(report) {
 }
 
 function resolveReport(id) {
-    document.getElementById('resolveReportForm').action = '{{ url("admin/reports") }}/' + id;
+    document.getElementById('resolveReportForm').action = '{{ url("admin/reports") }}/' + id + '/resolve';
+    document.getElementById('resolveNote').value = '';
 }
 
 function addNote(id, currentNote) {
@@ -366,29 +378,25 @@ function filterReports(status) {
 
 function clearFilters() {
     document.getElementById('statusFilter').value = '';
-    document.getElementById('reasonFilter').value = '';
     document.getElementById('searchReport').value = '';
     applyFilters();
 }
 
 function applyFilters() {
     const statusFilter = document.getElementById('statusFilter').value;
-    const reasonFilter = document.getElementById('reasonFilter').value;
     const searchFilter = document.getElementById('searchReport').value.toLowerCase();
     const rows = document.querySelectorAll('#reportsTable tbody tr');
     
     rows.forEach(row => {
         const statusMatch = !statusFilter || row.dataset.status === statusFilter;
-        const reasonMatch = !reasonFilter || row.dataset.reason.includes(reasonFilter.toLowerCase());
         const textMatch = !searchFilter || row.textContent.toLowerCase().includes(searchFilter);
         
-        row.style.display = statusMatch && reasonMatch && textMatch ? '' : 'none';
+        row.style.display = statusMatch && textMatch ? '' : 'none';
     });
 }
 
 // Add event listeners
 document.getElementById('statusFilter').addEventListener('change', applyFilters);
-document.getElementById('reasonFilter').addEventListener('change', applyFilters);
 document.getElementById('searchReport').addEventListener('input', applyFilters);
 </script>
 @endpush

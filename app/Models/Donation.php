@@ -20,6 +20,14 @@ class Donation extends Model
         'expiry_date',
     ];
 
+    protected $casts = [
+    'expiry_date' => 'datetime',
+    'confirmed_at' => 'datetime',
+    'created_at' => 'datetime',
+    'updated_at' => 'datetime',
+];
+
+
     // Relations
     public function medicine()
     {

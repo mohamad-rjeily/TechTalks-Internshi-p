@@ -19,6 +19,8 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
         'phone',
         'location',
         'role',
+        'newsletter_opt_in',
+        'profile_visibility',
     ];
 
     protected $hidden = [
@@ -69,4 +71,9 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
     {
         return $this->hasMany(Donation::class, 'donor_id');
     }
+    public function medicines()
+    {
+        return $this->hasMany(Medicine::class);
+    }
+
 }
