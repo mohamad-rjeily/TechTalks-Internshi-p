@@ -112,18 +112,89 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Admin routes (temporarily without auth for testing)
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
-    
-    // Categories routes
-    Route::get('categories', [CategoryController::class, 'indexWeb'])->name('categories.index');
-    Route::get('categories/create', [CategoryController::class, 'create'])->name('categories.create');
-    Route::post('categories', [CategoryController::class, 'storeWeb'])->name('categories.store');
-    Route::get('categories/{id}', [CategoryController::class, 'showWeb'])->name('categories.show');
-    Route::get('categories/{id}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
-    Route::put('categories/{id}', [CategoryController::class, 'updateWeb'])->name('categories.update');
-    Route::delete('categories/{id}', [CategoryController::class, 'destroyWeb'])->name('categories.destroy');
+// A
+// Admin Login Form (GET request to show the form)
+Route::get('/admin/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
+
+// Admin Login Handler (POST request to submit the form)
+Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.submit');
+
+// Admin Logout (Supports both GET and POST)
+Route::match(['get', 'post'], '/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
+
+
+// =========================================================================
+// ADMIN PROTECTED ROUTES (Requires 'admin.auth' middleware)
+// =========================================================================
+Route::middleware(['admin.auth'])->prefix('admin')->name('admin.')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+
+    // Users Management (Admin Views: admin.users.*)
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [UserController::class, 'indexWeb'])->name('index');
+        Route::get('/create', [UserController::class, 'createWeb'])->name('create');
+        Route::post('/', [UserController::class, 'storeWeb'])->name('store');
+        Route::get('/{id}', [UserController::class, 'showWeb'])->name('show');
+        Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [UserController::class, 'updateWeb'])->name('update');
+        Route::delete('/{id}', [UserController::class, 'destroyWeb'])->name('destroy');
+    });
+
+    // Medicines Management (Admin Views: admin.medicines.*)
+    Route::prefix('medicines')->name('medicines.')->group(function () {
+        Route::get('/', [MedicineController::class, 'indexWeb'])->name('index');
+        Route::get('/create', [MedicineController::class, 'createWeb'])->name('create');
+        Route::post('/', [MedicineController::class, 'storeWeb'])->name('store');
+        Route::get('/{id}', [MedicineController::class, 'showWeb'])->name('show');
+        Route::get('/{id}/edit', [MedicineController::class, 'editWeb'])->name('edit');
+        Route::put('/{id}', [MedicineController::class, 'updateWeb'])->name('update');
+        Route::delete('/{id}', [MedicineController::class, 'destroyWeb'])->name('destroy');
+    });
+
+    // Categories Management (Admin Views: admin.categories.*)
+    Route::prefix('categories')->name('categories.')->group(function () {
+        Route::get('/', [CategoryController::class, 'indexWeb'])->name('index');
+        Route::get('/create', [CategoryController::class, 'create'])->name('create');
+        Route::post('/', [CategoryController::class, 'storeWeb'])->name('store');
+        Route::get('/{id}', [CategoryController::class, 'showWeb'])->name('show');
+        Route::get('/{id}/edit', [CategoryController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [CategoryController::class, 'updateWeb'])->name('update');
+        Route::delete('/{id}', [CategoryController::class, 'destroyWeb'])->name('destroy');
+    });
+
+    // Donations Management (Admin Views: admin.donations.*)
+    Route::prefix('donations')->name('donations.')->group(function() {
+        Route::get('/', [DonationController::class, 'indexWeb'])->name('index');
+        Route::get('/create', [DonationController::class, 'createWeb'])->name('create');
+        Route::post('/', [DonationController::class, 'storeWeb'])->name('store');
+        Route::get('/{id}', [DonationController::class, 'showWeb'])->name('show');
+        Route::get('/{id}/edit', [DonationController::class, 'editWeb'])->name('edit');
+        Route::put('/{id}', [DonationController::class, 'updateWeb'])->name('update');
+        Route::delete('/{id}', [DonationController::class, 'destroyWeb'])->name('destroy');
+    });
+
+    // Requests Management (Admin Views: admin.requests.*)
+    Route::prefix('requests')->name('requests.')->group(function(){
+        Route::get('/', [RequestController::class,'indexWeb'])->name('index');
+        Route::get('/create', [RequestController::class,'createWeb'])->name('create');
+        Route::post('/', [RequestController::class,'storeWeb'])->name('store');
+        Route::get('/{id}', [RequestController::class,'showWeb'])->name('show');
+        Route::get('/{id}/edit', [RequestController::class,'editWeb'])->name('edit');
+        Route::put('/{id}', [RequestController::class,'updateWeb'])->name('update');
+        Route::delete('/{id}', [RequestController::class,'destroyWeb'])->name('destroy');
+    });
+
+    // Reports Management (Admin Views: admin.reports.*)
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [ReportController::class, 'indexWeb'])->name('index');
+        Route::get('/create', [ReportController::class, 'createWeb'])->name('create');
+        Route::post('/', [ReportController::class, 'storeWeb'])->name('store');
+        Route::get('/{id}', [ReportController::class, 'showWeb'])->name('show');
+        Route::get('/{id}/edit', [ReportController::class, 'editWeb'])->name('edit');
+        Route::put('/{id}', [ReportController::class, 'updateWeb'])->name('update');
+        Route::delete('/{id}', [ReportController::class, 'destroyWeb'])->name('destroy');
+    });
     
     // Audit Logs (Admin Views: admin.audit_logs.*)
     Route::prefix('audit-logs')->name('audit-logs.')->group(function () {
