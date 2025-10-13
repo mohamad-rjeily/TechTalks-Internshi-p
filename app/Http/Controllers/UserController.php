@@ -8,21 +8,12 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    // =============================
-    // API METHODS (JSON responses)
-    // =============================
-
-    /**
-     * Get all users (API)
-     */
+    // ============================= API METHODS =============================
     public function index()
     {
         return response()->json(User::all(), 200);
     }
 
-    /**
-     * Create a new user (API)
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -44,27 +35,18 @@ class UserController extends Controller
         return response()->json($user, 201);
     }
 
-    /**
-     * Show a single user by id (API)
-     */
     public function show($id)
     {
         $user = User::find($id);
-
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
-
         return response()->json($user, 200);
     }
 
-    /**
-     * Update an existing user (API)
-     */
     public function update(Request $request, $id)
     {
         $user = User::find($id);
-
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
@@ -88,46 +70,29 @@ class UserController extends Controller
         return response()->json($user, 200);
     }
 
-    /**
-     * Delete a user (API)
-     */
     public function destroy($id)
     {
         $user = User::find($id);
-
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
 
         $user->delete();
-
         return response()->json(['message' => 'User deleted'], 200);
     }
 
-    // ===============================
-    // WEB METHODS (Blade responses)
-    // ===============================
-
-    /**
-     * Display users list page (Web)
-     */
+    // ============================= WEB METHODS =============================
     public function indexWeb()
     {
         $users = User::all();
-        return view('users.index', compact('users'));
+        return view('admin.users.index', compact('users'));
     }
 
-    /**
-     * Show create user form (Web)
-     */
     public function create()
     {
-        return view('users.create');
+        return view('admin.users.create');
     }
 
-    /**
-     * Store user from web form (Web)
-     */
     public function storeWeb(Request $request)
     {
         $request->validate([
@@ -146,34 +111,25 @@ class UserController extends Controller
             'location' => $request->location,
         ]);
 
-        return redirect()->route('users.index')->with('success', 'User created successfully!');
+        return redirect()->route('admin.users.index')->with('success', 'User created successfully!');
     }
 
-    /**
-     * Show single user page (Web)
-     */
     public function showWeb($id)
     {
         $user = User::findOrFail($id);
-        return view('users.show', compact('user'));
+        return view('admin.users.show', compact('user'));
     }
 
-    /**
-     * Show edit user form (Web)
-     */
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        return view('users.edit', compact('user'));
+        return view('admin.users.edit', compact('user'));
     }
 
-    /**
-     * Update user from web form (Web)
-     */
     public function updateWeb(Request $request, $id)
     {
         $user = User::findOrFail($id);
-        
+
         $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users,email,' . $user->id,
@@ -190,17 +146,19 @@ class UserController extends Controller
             'location' => $request->location,
         ]);
 
-        return redirect()->route('users.show', $user->id)->with('success', 'User updated successfully!');
+        return redirect()->route('admin.users.show', $user->id)->with('success', 'User updated successfully!');
     }
 
-    /**
-     * Delete user from web (Web)
-     */
     public function destroyWeb($id)
     {
         $user = User::findOrFail($id);
         $user->delete();
-        
-        return redirect()->route('users.index')->with('success', 'User deleted successfully!');
+
+        return redirect()->route('admin.users.index')->with('success', 'User deleted successfully!');
+    }
+    public function showUser(User $user) // Laravel passe l'objet User trouvé par l'ID
+    {
+        return view('user.showprofile', ['profileUser' => $user]);
     }
 }
+

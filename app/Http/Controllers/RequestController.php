@@ -13,15 +13,14 @@ class RequestController extends Controller
     // ========================= WEB =========================
     public function indexWeb()
     {
-        $requests = RequestModel::with(['medicine', 'requester', 'donor'])->latest()->get();
-        return view('requests.index', compact('requests'));
+        // Return a simple view that includes the Livewire component
+        return view('requests.index')->with('showSuccessAlert', true);
     }
 
     public function createWeb()
     {
-        // Show all medicines (avoid filtering by a missing 'status' column in some DBs)
-        $medicines = Medicine::orderBy('name')->get();
-        return view('requests.create', compact('medicines'));
+        // Redirect to requests page where the create modal can be opened
+        return redirect()->route('requests.index');
     }
 
     public function storeWeb(HttpRequest $request)
@@ -49,16 +48,16 @@ class RequestController extends Controller
 
     public function showWeb($id)
     {
-        $request = RequestModel::with(['medicine', 'requester', 'donor'])->findOrFail($id);
-        return view('requests.show', compact('request'));
+        // For now, redirect to requests index
+        // You can implement a detailed view later if needed
+        return redirect()->route('requests.index');
     }
 
     public function editWeb($id)
     {
-        $request = RequestModel::findOrFail($id);
-        $medicines = Medicine::all();
-        $users = User::all();
-        return view('requests.edit', compact('request', 'medicines', 'users'));
+        // For now, redirect to requests index
+        // You can implement edit functionality in Livewire later if needed
+        return redirect()->route('requests.index');
     }
 
     public function updateWeb(HttpRequest $request, $id)

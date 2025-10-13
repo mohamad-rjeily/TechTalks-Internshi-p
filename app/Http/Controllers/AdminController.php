@@ -15,25 +15,73 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
-    // ===================== ADMIN DASHBOARD =====================
+    // ===================== ADMIN AUTHENTICATION =====================
     
+    /**
+     * Show admin login form
+     */
+    public function showLoginForm()
+    {
+        // If admin is already logged in, redirect to dashboard
+        if (session()->has('admin_id')) {
+            return redirect()->route('admin.dashboard');
+        }
+        
+        return view('admin.login');
+    }
+
+    /**
+     * Handle admin login
+     */
+    public function login(Request $request)
+    {
+        $request->validate([
+            'userName' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        // Find admin by username
+        $admin = Admin::where('userName', $request->userName)->first();
+
+        // Check if admin exists and password is correct
+        if ($admin && Hash::check($request->password, $admin->password)) {
+            // Store admin info in session
+            session([
+                'admin_id' => $admin->id,
+                'admin_username' => $admin->userName,
+            ]);
+
+            return redirect()->route('admin.dashboard')->with('success', 'Welcome back, ' . $admin->userName . '!');
+        }
+
+        return back()->withErrors([
+            'userName' => 'Invalid username or password',
+        ])->withInput($request->only('userName'));
+    }
+
+    /**
+     * Handle admin logout
+     */
+    public function logout(Request $request)
+    {
+        // Remove admin session data
+        session()->forget(['admin_id', 'admin_username']);
+
+        return redirect()->route('admin.login')->with('success', 'You have been logged out successfully');
+    }
+
+    // ===================== ADMIN DASHBOARD =====================
     public function dashboard()
     {
-        // Get statistics for the dashboard with error handling
         try {
             $totalMedicines = Medicine::count();
             $pendingRequests = MedicineRequest::where('status', 'pending')->count();
-            $activeUsers = User::count(); // Remove status filter since User model doesn't have status field
+            $activeUsers = User::count();
             $openReports = Report::where('status', 'open')->count();
         } catch (\Exception $e) {
-            // If there's any database error, use default values
-            $totalMedicines = 0;
-            $pendingRequests = 0;
-            $activeUsers = 0;
-            $openReports = 0;
+            $totalMedicines = $pendingRequests = $activeUsers = $openReports = 0;
         }
 
-        // Get recent activity from audit logs
         try {
             $recentActivity = AuditLog::with('actor')
                 ->latest()
@@ -42,16 +90,15 @@ class AdminController extends Controller
                 ->map(function ($log) {
                     return [
                         'action_type' => $log->action_type,
-                        'details' => $log->detail, // Note: your model uses 'detail' not 'details'
-                        'actor_name' => $log->actor ? $log->actor->name : 'System',
-                        'created_at' => $log->created_at,
+                        'details'     => $log->detail,
+                        'actor_name'  => $log->actor ? $log->actor->name : 'System',
+                        'created_at'  => $log->created_at,
                     ];
                 });
         } catch (\Exception $e) {
             $recentActivity = collect([]);
         }
 
-        // Get urgent requests (example: requests created in last 24 hours)
         try {
             $urgentRequests = MedicineRequest::with(['requester', 'medicine'])
                 ->where('created_at', '>=', now()->subDay())
@@ -60,20 +107,19 @@ class AdminController extends Controller
                 ->get()
                 ->map(function ($request) {
                     return [
-                        'user_name' => $request->requester ? $request->requester->name : 'Unknown',
+                        'user_name'     => $request->requester ? $request->requester->name : 'Unknown',
                         'medicine_name' => $request->medicine ? $request->medicine->name : 'Unknown',
-                        'urgency' => 'within 2 days',
-                        'id' => $request->id,
+                        'urgency'       => 'within 2 days',
+                        'id'            => $request->id,
                     ];
                 });
         } catch (\Exception $e) {
             $urgentRequests = collect([]);
         }
 
-        // Monthly statistics for chart
         $monthlyDonations = [];
         $monthlyRequests = [];
-        
+
         try {
             for ($i = 11; $i >= 0; $i--) {
                 $date = now()->subMonths($i);
@@ -85,18 +131,12 @@ class AdminController extends Controller
                     ->count();
             }
         } catch (\Exception $e) {
-            // If there's any database error, use default values
-            $monthlyDonations = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            $monthlyRequests = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $monthlyDonations = $monthlyRequests = array_fill(0, 12, 0);
         }
 
-        // Debug: Ensure variables are arrays
-        $monthlyDonations = is_array($monthlyDonations) ? $monthlyDonations : [];
-        $monthlyRequests = is_array($monthlyRequests) ? $monthlyRequests : [];
-
-        return view('admin.layouts.dashboard', compact(
+        return view('admin.dashboard', compact(
             'totalMedicines',
-            'pendingRequests', 
+            'pendingRequests',
             'activeUsers',
             'openReports',
             'recentActivity',
@@ -107,25 +147,21 @@ class AdminController extends Controller
     }
 
     // ===================== ADMIN CRUD =====================
-
-    // Web: list all admins
     public function index()
     {
         $admins = Admin::all();
-        return view('admin.index', compact('admins'));
+        return view('admin.admins.index', compact('admins'));
     }
 
-    // Web: show create form
     public function create()
     {
-        return view('admin.create');
+        return view('admin.admins.create');
     }
 
-    // Web: store new admin
     public function store(Request $request)
     {
         $request->validate([
-            'userName' => 'required|unique:admin,userName',
+            'userName' => 'required|unique:admins,userName',
             'password' => 'required|min:6',
         ]);
 
@@ -137,20 +173,18 @@ class AdminController extends Controller
         return redirect()->route('admins.index');
     }
 
-    // Web: show edit form
     public function edit($id)
     {
         $admin = Admin::findOrFail($id);
-        return view('admin.edit', compact('admin'));
+        return view('admin.admins.edit', compact('admin'));
     }
 
-    // Web: update admin
     public function update(Request $request, $id)
     {
         $admin = Admin::findOrFail($id);
 
         $request->validate([
-            'userName' => 'required|unique:admin,userName,' . $admin->id,
+            'userName' => 'required|unique:admins,userName,' . $admin->id,
             'password' => 'nullable|min:6',
         ]);
 
@@ -163,7 +197,6 @@ class AdminController extends Controller
         return redirect()->route('admins.index');
     }
 
-    // Web: delete admin
     public function destroy($id)
     {
         $admin = Admin::findOrFail($id);
@@ -173,14 +206,11 @@ class AdminController extends Controller
     }
 
     // ===================== API METHODS =====================
-
-    // API: GET all
     public function indexApi()
     {
         return response()->json(Admin::all(), 200);
     }
 
-    // API: GET one
     public function showApi($id)
     {
         $admin = Admin::find($id);
@@ -190,11 +220,10 @@ class AdminController extends Controller
         return response()->json($admin, 200);
     }
 
-    // API: POST create
     public function storeApi(Request $request)
     {
         $request->validate([
-            'userName' => 'required|unique:admin,userName',
+            'userName' => 'required|unique:admins,userName',
             'password' => 'required|min:6',
         ]);
 
@@ -206,7 +235,6 @@ class AdminController extends Controller
         return response()->json($admin, 201);
     }
 
-    // API: PUT/PATCH update
     public function updateApi(Request $request, $id)
     {
         $admin = Admin::find($id);
@@ -215,7 +243,7 @@ class AdminController extends Controller
         }
 
         $request->validate([
-            'userName' => 'sometimes|unique:admin,userName,' . $admin->id,
+            'userName' => 'sometimes|unique:admins,userName,' . $admin->id,
             'password' => 'sometimes|min:6',
         ]);
 
@@ -227,7 +255,6 @@ class AdminController extends Controller
         return response()->json($admin, 200);
     }
 
-    // API: DELETE
     public function destroyApi($id)
     {
         $admin = Admin::find($id);

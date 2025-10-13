@@ -77,7 +77,7 @@ class RequestCreateModal extends Component
         $this->show = false;
         $this->resetForm();
         session()->flash('success', 'Request created successfully.');
-        return redirect()->route('requests');
+        return redirect()->route('requests.index');
     }
 
     private function resolveActorUserId(): int

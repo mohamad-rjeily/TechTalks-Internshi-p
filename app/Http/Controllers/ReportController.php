@@ -34,7 +34,7 @@ class ReportController extends Controller
 
         Report::create($validated);
 
-        return redirect()->route('reports.index')->with('success','Report created successfully');
+        return redirect()->route('admin.reports.index')->with('success','Report created successfully');
     }
 
     public function showWeb($id)
@@ -50,6 +50,9 @@ class ReportController extends Controller
         return view('reports.edit', compact('report','users'));
     }
 
+    /**
+     * Handles full report editing (e.g., changing reason, target).
+     */
     public function updateWeb(Request $request, $id)
     {
         $validated = $request->validate([
@@ -63,7 +66,22 @@ class ReportController extends Controller
         $report = Report::findOrFail($id);
         $report->update($validated);
 
-        return redirect()->route('reports.index')->with('success','Report updated successfully');
+        return redirect()->route('admin.reports.index')->with('success','Report updated successfully');
+    }
+
+    /**
+     * New dedicated method to resolve a report with minimal input.
+     * This fixes the validation error from the "Resolve" modal form.
+     */
+    public function resolveWeb(Request $request, $id)
+    {
+        $report = Report::findOrFail($id);
+        $report->update([
+            'status' => 'resolved',
+            'admin_notes' => $request->input('admin_note'), // Corrected to use 'admin_notes'
+        ]);
+    
+        return redirect()->route('admin.reports.index')->with('success', 'Report resolved successfully.');
     }
 
     public function destroyWeb($id)
@@ -71,7 +89,7 @@ class ReportController extends Controller
         $report = Report::findOrFail($id);
         $report->delete();
 
-        return redirect()->route('reports.index')->with('success','Report deleted successfully');
+        return redirect()->route('admin.reports.index')->with('success','Report deleted successfully');
     }
 
     // ========================= API =========================
@@ -104,6 +122,7 @@ class ReportController extends Controller
 
     public function updateApi(Request $request, $id)
     {
+        // For API, we keep the original validation scope since API requests are usually full JSON payloads
         $validated = $request->validate([
             'reported_id' => 'required|exists:users,id',
             'target_id' => 'required',

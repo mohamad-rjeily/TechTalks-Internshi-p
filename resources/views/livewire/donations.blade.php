@@ -12,13 +12,45 @@
         </div>
     </div>
 
-    {{-- Flash --}}
+    {{-- Success Notification --}}
     @if ($flashVisible && $flashMessage)
         <div x-data="{ show: true }"
-             x-init="setTimeout(() => { show = false; $wire.hideFlash(); }, 3500)"
-             x-show="show" x-transition
-             class="alert alert-{{ $flashType }} border-0 shadow-sm rounded-3">
-            <div class="fw-semibold">{{ $flashMessage }}</div>
+             x-init="setTimeout(() => { show = false; $wire.hideFlash(); }, 3000)"
+             x-show="show" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform translate-x-full"
+             x-transition:enter-end="opacity-100 transform translate-x-0"
+             x-transition:leave="transition ease-in duration-300"
+             x-transition:leave-start="opacity-100 transform translate-x-0"
+             x-transition:leave-end="opacity-0 transform translate-x-full"
+             class="position-fixed top-0 end-0 p-3" 
+                    style="z-index: 9999;">
+            <div class="alert alert-{{ $flashType }} border-0 shadow-sm rounded-pill d-flex align-items-center" 
+                 style="min-width: 300px; max-width: 400px;">
+                <i class="bi {{ $flashType === 'success' ? 'bi-check-circle-fill text-success' : 'bi-exclamation-triangle-fill text-danger' }} me-2"></i>
+                <div class="fw-semibold small">{{ $flashMessage }}</div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Session Flash Notification (from browse medicine) --}}
+    @if (session('success'))
+        <div x-data="{ show: true }"
+             x-init="setTimeout(() => { show = false; }, 3000)"
+             x-show="show" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform translate-x-full"
+             x-transition:enter-end="opacity-100 transform translate-x-0"
+             x-transition:leave="transition ease-in duration-300"
+             x-transition:leave-start="opacity-100 transform translate-x-0"
+             x-transition:leave-end="opacity-0 transform translate-x-full"
+             class="position-fixed top-0 end-0 p-3" 
+                    style="z-index: 9999;">
+            <div class="alert alert-success border-0 shadow-sm rounded-pill d-flex align-items-center" 
+                 style="min-width: 300px; max-width: 400px;">
+                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                <div class="fw-semibold small">{{ session('success') }}</div>
+            </div>
         </div>
     @endif
 
@@ -138,12 +170,15 @@
                                     <td>{{ $don->recipient?->name ?? '—' }}</td>
                                     <td class="d-flex gap-2">
                                         <button class="btn btn-sm btn-outline-primary"
-                                                wire:click="startEdit({{ $don->id }})">
-                                            <i class="bi bi-pencil"></i>
+                                                wire:click="startEdit({{ $don->id }})"
+                                                title="Edit Donation">
+                                            <i class="bi bi-pencil me-1"></i> Edit
                                         </button>
                                         <button class="btn btn-sm btn-outline-danger"
-                                                wire:click="cancelDonation({{ $don->id }})">
-                                            <i class="bi bi-x-circle"></i>
+                                                wire:click="cancelDonation({{ $don->id }})"
+                                                wire:confirm="Are you sure you want to delete this donation?"
+                                                title="Delete Donation">
+                                            <i class="bi bi-trash me-1"></i> Delete
                                         </button>
                                     </td>
                                 </tr>

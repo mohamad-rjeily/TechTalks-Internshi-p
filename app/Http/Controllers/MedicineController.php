@@ -24,7 +24,7 @@ class MedicineController extends Controller
             'category_id'     => 'required|integer|exists:categories,id',
             'name'            => 'required|string|max:255',
             'brand'           => 'nullable|string|max:255',
-            'form'            => 'nullable|string|max:50',
+            'form'            => 'required|string|max:50', // FIXED
             'strength'        => 'nullable|string|max:50',
             'condition_notes' => 'nullable|string',
             'photo_path'      => 'nullable|string|max:255',
@@ -60,7 +60,7 @@ class MedicineController extends Controller
             'category_id'     => 'sometimes|integer|exists:categories,id',
             'name'            => 'sometimes|string|max:255',
             'brand'           => 'nullable|string|max:255',
-            'form'            => 'nullable|string|max:50',
+            'form'            => 'required|string|max:50', // FIXED
             'strength'        => 'nullable|string|max:50',
             'condition_notes' => 'nullable|string',
             'photo_path'      => 'nullable|string|max:255',
@@ -116,7 +116,7 @@ class MedicineController extends Controller
             'category_id'     => 'required|integer|exists:categories,id',
             'name'            => 'required|string|max:255',
             'brand'           => 'nullable|string|max:255',
-            'form'            => 'nullable|string|max:255',
+            'form'            => 'required|string|max:255', // FIXED
             'strength'        => 'nullable|string|max:255',
             'condition_notes' => 'nullable|string',
         ]);
@@ -147,7 +147,7 @@ class MedicineController extends Controller
             'category_id'     => 'required|integer|exists:categories,id',
             'name'            => 'required|string|max:255',
             'brand'           => 'nullable|string|max:255',
-            'form'            => 'nullable|string|max:255',
+            'form'            => 'required|string|max:255', // FIXED
             'strength'        => 'nullable|string|max:255',
             'condition_notes' => 'nullable|string',
         ]);

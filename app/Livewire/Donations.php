@@ -194,14 +194,28 @@ class Donations extends Component
         ]);
 
         // Here you would typically create a request record
-        // For now, we'll just show a success message
+        // For now, we'll just show a success message and redirect
         $this->setFlash("Request submitted successfully! You requested {$this->requestQuantity} units. The donor will be notified.");
         $this->cancelRequest();
+        
+        // Redirect to requests page using Livewire's redirect
+        $this->redirect(route('requests.index'));
     }
 
     public function cancelRequest(): void
     {
         $this->reset(['requestDonationId', 'requestMessage', 'requestQuantity', 'showRequestModal']);
+    }
+
+    public function cancelDonation(int $donationId): void
+    {
+        try {
+            $donation = Donation::findOrFail($donationId);
+            $donation->delete();
+            $this->setFlash('Donation deleted successfully.', 'danger');
+        } catch (\Throwable $e) {
+            $this->setFlash('Failed to delete donation: ' . $e->getMessage(), 'danger');
+        }
     }
 
     private function loadMyDonations()

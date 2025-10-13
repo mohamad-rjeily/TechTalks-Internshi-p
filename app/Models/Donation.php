@@ -11,16 +11,29 @@ class Donation extends Model
 
    
     protected $fillable = [
-        'medicine_id','donor_id','recipient_id','quantity',
-        'confirmed_at','notes','status','expiry_date',
+        'medicine_id',
+        'donor_id',
+        'recipient_id',
+        'quantity',
+        'confirmed_at',
+        'notes',
+        'status',
+        'expiry_date',
     ];
 
-    protected $casts = [
-        'expiry_date'  => 'date',
-        'confirmed_at' => 'datetime',
-    ];
+    // Relations
+    public function medicine()
+    {
+        return $this->belongsTo(Medicine::class, 'medicine_id');
+    }
 
-    public function medicine(){ return $this->belongsTo(Medicine::class); }
-    public function donor(){ return $this->belongsTo(User::class, 'donor_id'); }
-    public function recipient(){ return $this->belongsTo(User::class, 'recipient_id'); }
+    public function donor()
+    {
+        return $this->belongsTo(User::class, 'donor_id');
+    }
+
+    public function recipient()
+    {
+        return $this->belongsTo(User::class, 'recipient_id');
+    }
 }

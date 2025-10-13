@@ -2,6 +2,16 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\MedicineController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DonationController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\RequestController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\AdminController;
+
+// ===================== API Routes =====================
 
 Route::prefix('users')->group(function () {
     Route::get('/', [UserController::class, 'index']);
@@ -12,8 +22,6 @@ Route::prefix('users')->group(function () {
     Route::delete('/{id}', [UserController::class, 'destroy']);
 });
 
-use App\Http\Controllers\MedicineController;
-
 Route::prefix('medicines')->group(function () {
     Route::get('/', [MedicineController::class, 'index']);
     Route::post('/', [MedicineController::class, 'store']);
@@ -22,7 +30,6 @@ Route::prefix('medicines')->group(function () {
     Route::patch('/{id}', [MedicineController::class, 'update']);
     Route::delete('/{id}', [MedicineController::class, 'destroy']);
 });
-use App\Http\Controllers\CategoryController;
 
 Route::prefix('categories')->group(function () {
     Route::get('/', [CategoryController::class, 'index']);
@@ -32,59 +39,58 @@ Route::prefix('categories')->group(function () {
     Route::patch('/{id}', [CategoryController::class, 'update']);
     Route::delete('/{id}', [CategoryController::class, 'destroy']);
 });
-use App\Http\Controllers\DonationController;
 
 Route::prefix('donations')->group(function() {
     Route::get('/', [DonationController::class, 'apiIndex']);
     Route::post('/', [DonationController::class, 'apiStore']);
     Route::get('/{id}', [DonationController::class, 'apiShow']);
-    Route::put('/{id}', [DonationController::class, 'apiUpdate']);   // Full update
-    Route::patch('/{id}', [DonationController::class, 'apiUpdate']); // Partial update
+    Route::put('/{id}', [DonationController::class, 'apiUpdate']);
+    Route::patch('/{id}', [DonationController::class, 'apiUpdate']);
     Route::delete('/{id}', [DonationController::class, 'apiDestroy']);
 });
-use App\Http\Controllers\NotificationController;
 
 Route::prefix('notifications')->group(function () {
-    Route::get('/user/{userId}', [NotificationController::class, 'indexApi']); // all notifications for user
-    Route::post('/', [NotificationController::class, 'storeApi']); // create notification
-    Route::get('/{id}', [NotificationController::class, 'showApi']); // show notification
-    Route::put('/{id}', [NotificationController::class, 'updateApi']); // update notification
-    Route::patch('/{id}/read', [NotificationController::class, 'markAsReadApi']); // mark as read
-    Route::delete('/{id}', [NotificationController::class, 'destroyApi']); // delete notification
+    Route::get('/user/{userId}', [NotificationController::class, 'indexApi']);
+    Route::post('/', [NotificationController::class, 'storeApi']);
+    Route::get('/{id}', [NotificationController::class, 'showApi']);
+    Route::put('/{id}', [NotificationController::class, 'updateApi']);
+    Route::patch('/{id}/read', [NotificationController::class, 'markAsReadApi']);
+    Route::delete('/{id}', [NotificationController::class, 'destroyApi']);
 });
-use App\Http\Controllers\RequestController;
-
 
 // ================= REQUESTS =================
-Route::get('/requests', [RequestController::class, 'indexApi']);
-Route::post('/requests', [RequestController::class, 'storeApi']);
-Route::get('/requests/{id}', [RequestController::class, 'showApi']);
-Route::patch('/requests/{id}', [RequestController::class, 'updateApi']); // PATCH
-Route::put('/requests/{id}', [RequestController::class, 'updateApi']);   // PUT enabled
-Route::delete('/requests/{id}', [RequestController::class, 'destroyApi']);
+Route::prefix('requests')->group(function() {
+    Route::get('/', [RequestController::class, 'indexApi']);
+    Route::post('/', [RequestController::class, 'storeApi']);
+    Route::get('/{id}', [RequestController::class, 'showApi']);
+    Route::patch('/{id}', [RequestController::class, 'updateApi']);
+    Route::put('/{id}', [RequestController::class, 'updateApi']);
+    Route::delete('/{id}', [RequestController::class, 'destroyApi']);
+});
 
-use App\Http\Controllers\ReportController;
 Route::prefix('reports')->group(function () {
     Route::get('/', [ReportController::class, 'indexApi']);
     Route::post('/', [ReportController::class, 'storeApi']);
     Route::get('/{id}', [ReportController::class, 'showApi']);
-    Route::patch('/{id}', [ReportController::class, 'updateApi']); // PATCH
-    Route::put('/{id}', [ReportController::class, 'updateApi']);   // PUT enabled
+    Route::patch('/{id}', [ReportController::class, 'updateApi']);
+    Route::put('/{id}', [ReportController::class, 'updateApi']);
     Route::delete('/{id}', [ReportController::class, 'destroyApi']);
 });
-use App\Http\Controllers\AuditLogController;
 
-Route::get('/audit_logs', [AuditLogController::class, 'indexApi']);
-Route::post('/audit_logs', [AuditLogController::class, 'storeApi']);
-Route::get('/audit_logs/{id}', [AuditLogController::class, 'showApi']);
-Route::patch('/audit_logs/{id}', [AuditLogController::class, 'updateApi']);
-Route::put('/audit_logs/{id}', [AuditLogController::class, 'updateApi']);
-Route::delete('/audit_logs/{id}', [AuditLogController::class, 'destroyApi']);
-use App\Http\Controllers\AdminController;
+Route::prefix('audit_logs')->group(function () {
+    Route::get('/', [AuditLogController::class, 'indexApi']);
+    Route::post('/', [AuditLogController::class, 'storeApi']);
+    Route::get('/{id}', [AuditLogController::class, 'showApi']);
+    Route::patch('/{id}', [AuditLogController::class, 'updateApi']);
+    Route::put('/{id}', [AuditLogController::class, 'updateApi']);
+    Route::delete('/{id}', [AuditLogController::class, 'destroyApi']);
+});
 
-Route::get('admins', [AdminController::class, 'indexApi']);
-Route::get('admins/{id}', [AdminController::class, 'showApi']);
-Route::post('admins', [AdminController::class, 'storeApi']);
-Route::put('admins/{id}', [AdminController::class, 'updateApi']);
-Route::patch('admins/{id}', [AdminController::class, 'updateApi']);
-Route::delete('admins/{id}', [AdminController::class, 'destroyApi']);
+Route::prefix('admins')->group(function () {
+    Route::get('/', [AdminController::class, 'indexApi']);
+    Route::get('/{id}', [AdminController::class, 'showApi']);
+    Route::post('/', [AdminController::class, 'storeApi']);
+    Route::put('/{id}', [AdminController::class, 'updateApi']);
+    Route::patch('/{id}', [AdminController::class, 'updateApi']);
+    Route::delete('/{id}', [AdminController::class, 'destroyApi']);
+});
