@@ -24,7 +24,7 @@ class MedicineController extends Controller
             'category_id'     => 'required|integer|exists:categories,id',
             'name'            => 'required|string|max:255',
             'brand'           => 'nullable|string|max:255',
-            'form'            => 'required|string|max:50', // FIXED
+            'form'            => 'required|string|max:50',
             'strength'        => 'nullable|string|max:50',
             'condition_notes' => 'nullable|string',
             'photo_path'      => 'nullable|string|max:255',
@@ -60,7 +60,7 @@ class MedicineController extends Controller
             'category_id'     => 'sometimes|integer|exists:categories,id',
             'name'            => 'sometimes|string|max:255',
             'brand'           => 'nullable|string|max:255',
-            'form'            => 'required|string|max:50', // FIXED
+            'form'            => 'required|string|max:50',
             'strength'        => 'nullable|string|max:50',
             'condition_notes' => 'nullable|string',
             'photo_path'      => 'nullable|string|max:255',
@@ -92,13 +92,13 @@ class MedicineController extends Controller
     public function indexWeb()
     {
         $medicines = Medicine::with('category')->get();
-        return view('admin.layouts.medicines.index', compact('medicines'));
+        return view('admin.medicines.index', compact('medicines'));
     }
 
     public function create()
     {
         $categories = \App\Models\Category::all();
-        return view('admin.layouts.medicines.create', compact('categories'));
+        return view('admin.medicines.create', compact('categories'));
     }
 
     public function storeWeb(Request $request)
@@ -107,7 +107,7 @@ class MedicineController extends Controller
             'category_id'     => 'required|integer|exists:categories,id',
             'name'            => 'required|string|max:255',
             'brand'           => 'nullable|string|max:255',
-            'form'            => 'required|string|max:255', // FIXED
+            'form'            => 'required|string|max:255',
             'strength'        => 'nullable|string|max:255',
             'condition_notes' => 'nullable|string',
         ]);
@@ -120,14 +120,14 @@ class MedicineController extends Controller
     public function showWeb($id)
     {
         $medicine = Medicine::with('category')->findOrFail($id);
-        return view('admin.layouts.medicines.show', compact('medicine'));
+        return view('admin.medicines.show', compact('medicine'));
     }
 
     public function edit($id)
     {
         $medicine = Medicine::findOrFail($id);
         $categories = \App\Models\Category::all();
-        return view('admin.layouts.medicines.edit', compact('medicine', 'categories'));
+        return view('admin.medicines.edit', compact('medicine', 'categories'));
     }
 
     public function updateWeb(Request $request, $id)
@@ -138,7 +138,7 @@ class MedicineController extends Controller
             'category_id'     => 'required|integer|exists:categories,id',
             'name'            => 'required|string|max:255',
             'brand'           => 'nullable|string|max:255',
-            'form'            => 'required|string|max:255', // FIXED
+            'form'            => 'required|string|max:255',
             'strength'        => 'nullable|string|max:255',
             'condition_notes' => 'nullable|string',
         ]);

@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Hash;
 class AdminController extends Controller
 {
     // ===================== ADMIN AUTHENTICATION =====================
-    
+
     /**
      * Show admin login form
      */
@@ -26,7 +26,7 @@ class AdminController extends Controller
         if (session()->has('admin_id')) {
             return redirect()->route('admin.dashboard');
         }
-        
+
         return view('admin.login');
     }
 
@@ -55,7 +55,7 @@ class AdminController extends Controller
         }
 
         return back()->withErrors([
-            'userName' => 'Invalid username or password',
+            'userName' => 'Invalid username or password.',
         ])->withInput($request->only('userName'));
     }
 
@@ -67,21 +67,24 @@ class AdminController extends Controller
         // Remove admin session data
         session()->forget(['admin_id', 'admin_username']);
 
-        return redirect()->route('admin.login')->with('success', 'You have been logged out successfully');
+        return redirect()->route('admin.login')->with('success', 'You have been logged out successfully.');
     }
 
     // ===================== ADMIN DASHBOARD =====================
     public function dashboard()
     {
+        // Defensive calculation of summary statistics
         try {
             $totalMedicines = Medicine::count();
             $pendingRequests = MedicineRequest::where('status', 'pending')->count();
             $activeUsers = User::count();
             $openReports = Report::where('status', 'open')->count();
         } catch (\Exception $e) {
+            // Log the error if necessary, but default to 0 for display
             $totalMedicines = $pendingRequests = $activeUsers = $openReports = 0;
         }
 
+        // Fetch recent audit activity
         try {
             $recentActivity = AuditLog::with('actor')
                 ->latest()
@@ -91,6 +94,7 @@ class AdminController extends Controller
                     return [
                         'action_type' => $log->action_type,
                         'details'     => $log->detail,
+                        // Assumes 'actor' relationship exists on AuditLog and links to a User or Admin model with a 'name'
                         'actor_name'  => $log->actor ? $log->actor->name : 'System',
                         'created_at'  => $log->created_at,
                     ];
@@ -99,17 +103,19 @@ class AdminController extends Controller
             $recentActivity = collect([]);
         }
 
+        // Fetch urgent requests (e.g., pending requests made in the last day)
         try {
             $urgentRequests = MedicineRequest::with(['requester', 'medicine'])
-                ->where('created_at', '>=', now()->subDay())
+                ->where('created_at', '>=', now()->subDays(2)) // Adjusted to last 2 days for more data
                 ->where('status', 'pending')
+                ->latest()
                 ->take(5)
                 ->get()
                 ->map(function ($request) {
                     return [
                         'user_name'     => $request->requester ? $request->requester->name : 'Unknown',
                         'medicine_name' => $request->medicine ? $request->medicine->name : 'Unknown',
-                        'urgency'       => 'within 2 days',
+                        'urgency'       => $request->created_at->diffForHumans() . ' ago',
                         'id'            => $request->id,
                     ];
                 });
@@ -117,10 +123,12 @@ class AdminController extends Controller
             $urgentRequests = collect([]);
         }
 
+        // Prepare monthly data for charts (last 12 months)
         $monthlyDonations = [];
         $monthlyRequests = [];
 
         try {
+            // Iterate over the last 12 months
             for ($i = 11; $i >= 0; $i--) {
                 $date = now()->subMonths($i);
                 $monthlyDonations[] = Donation::whereYear('created_at', $date->year)
@@ -146,18 +154,27 @@ class AdminController extends Controller
         ));
     }
 
-    // ===================== ADMIN CRUD =====================
+    // ===================== ADMIN CRUD (WEB) =====================
+    /**
+     * Display a listing of the Admin users (Web).
+     */
     public function index()
     {
         $admins = Admin::all();
         return view('admin.admins.index', compact('admins'));
     }
 
+    /**
+     * Show the form for creating a new Admin (Web).
+     */
     public function create()
     {
         return view('admin.admins.create');
     }
 
+    /**
+     * Store a newly created Admin in storage (Web).
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -170,15 +187,21 @@ class AdminController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('admins.index');
+        return redirect()->route('admin.admins.index')->with('success', 'New admin created successfully!');
     }
 
+    /**
+     * Show the form for editing the specified Admin (Web).
+     */
     public function edit($id)
     {
         $admin = Admin::findOrFail($id);
         return view('admin.admins.edit', compact('admin'));
     }
 
+    /**
+     * Update the specified Admin in storage (Web).
+     */
     public function update(Request $request, $id)
     {
         $admin = Admin::findOrFail($id);
@@ -194,15 +217,32 @@ class AdminController extends Controller
         }
         $admin->save();
 
-        return redirect()->route('admins.index');
+        return redirect()->route('admin.admins.index')->with('success', 'Admin user ' . $admin->userName . ' updated successfully!');
     }
 
+    /**
+     * Remove the specified Admin from storage (Web).
+     * Added critical self-deletion and last-admin checks.
+     */
     public function destroy($id)
     {
         $admin = Admin::findOrFail($id);
+        $currentAdminId = session('admin_id');
+
+        // Check 1: Prevent self-deletion
+        if ($admin->id == $currentAdminId) {
+            return back()->with('error', 'You cannot delete your own admin account while logged in.');
+        }
+
+        // Check 2: Prevent deleting the last remaining admin
+        if (Admin::count() <= 1) {
+            return back()->with('error', 'Cannot delete the last remaining admin account. Please create another admin first.');
+        }
+
+        $userName = $admin->userName;
         $admin->delete();
 
-        return redirect()->route('admins.index');
+        return redirect()->route('admin.admins.index')->with('success', 'Admin user ' . $userName . ' deleted successfully.');
     }
 
     // ===================== API METHODS =====================

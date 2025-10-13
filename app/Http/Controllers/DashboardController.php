@@ -32,7 +32,7 @@ class DashboardController extends Controller
         $totalDonationsNonZero = $totalDonations > 0 ? $totalDonations : 1;
         $trustScore = round(($fulfilledDonations / $totalDonationsNonZero) * 100);
 
-        // --- 1. User’s available medicines (not expired) ---
+        // --- 1. User's available medicines (not expired) ---
         $userMedicines = Donation::where('donor_id', $user->id)
             ->where('status', 'available')
             ->whereDate('expiry_date', '>', Carbon::now())
@@ -141,7 +141,7 @@ class DashboardController extends Controller
                 break;
             case 'request_received':
                 $requesterName = $payload['requester_name'] ?? 'Someone';
-                $message = "📥 {$requesterName} requested {$payload['medicine_name']}";
+                $message = "🔥 {$requesterName} requested {$payload['medicine_name']}";
                 $color = 'bg-yellow-50';
                 break;
             case 'request_status':
@@ -166,7 +166,7 @@ class DashboardController extends Controller
             ->whereNull('read_at')
             ->count();
 
-        return view('dashboard', compact(
+        return view('user.dashboard', compact(
             'userMedicines',
             'availableDonations',
             'recentActivity',

@@ -80,12 +80,12 @@ class CategoryController extends Controller
     public function indexWeb()
     {
         $categories = Category::withCount('medicines')->get();
-        return view('admin.layouts.categories.index', compact('categories'));
+        return view('admin.categories.index', compact('categories'));
     }
 
     public function create()
     {
-        return view('admin.layouts.categories.create');
+        return view('admin.categories.create');
     }
 
     public function storeWeb(Request $request)
@@ -102,13 +102,13 @@ class CategoryController extends Controller
     public function showWeb($id)
     {
         $category = Category::withCount('medicines')->findOrFail($id);
-        return view('admin.layouts.categories.show', compact('category'));
+        return view('admin.categories.show', compact('category'));
     }
 
     public function edit($id)
     {
         $category = Category::findOrFail($id);
-        return view('admin.layouts.categories.edit', compact('category'));
+        return view('admin.categories.edit', compact('category'));
     }
 
     public function updateWeb(Request $request, $id)

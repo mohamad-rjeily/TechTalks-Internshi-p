@@ -7,85 +7,92 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Modern Dark/Purple Admin Theme */
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* Background Gradient: Darker, more serious administrative purple */
+            background: linear-gradient(135deg, #1e3a8a 0%, #4c1d95 100%); /* Indigo to Deep Purple */
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', sans-serif; /* Using a clean, modern font */
+            color: #f3f4f6;
         }
         .login-container {
-            max-width: 450px;
+            max-width: 420px;
             width: 100%;
             padding: 20px;
         }
         .login-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            /* Card Style: Slightly translucent dark card */
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
             overflow: hidden;
         }
         .login-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* Header Style: Bright, professional gradient strip */
+            background: linear-gradient(90deg, #8b5cf6 0%, #a78bfa 100%);
             color: white;
-            padding: 40px 30px;
+            padding: 20px;
             text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-bottom: 3px solid #6366f1;
         }
-        .login-header i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-        .login-header h3 {
-            margin: 0;
-            font-weight: 600;
-        }
-        .login-body {
-            padding: 40px 30px;
+        .card-body {
+            padding: 30px;
         }
         .form-control {
-            border-radius: 10px;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #f3f4f6;
+            padding: 10px 15px;
+            border-radius: 8px;
             transition: all 0.3s;
         }
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: #a78bfa;
+            color: white;
+            box-shadow: 0 0 0 0.25rem rgba(167, 139, 250, 0.4);
+        }
+        .form-control::placeholder {
+            color: #d1d5db; /* Light gray placeholder */
         }
         .input-group-text {
-            border-radius: 10px 0 0 10px;
-            border: 2px solid #e0e0e0;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-right: none;
-            background: #f8f9fa;
-        }
-        .input-group .form-control {
-            border-left: none;
-            border-radius: 0 10px 10px 0;
+            color: #a78bfa; /* Icon color */
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
         }
         .btn-login {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 10px;
-            padding: 12px;
-            font-weight: 600;
-            color: white;
             width: 100%;
-            transition: transform 0.2s;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            /* Button Gradient: Accent color */
+            background: linear-gradient(90deg, #f97316 0%, #fb923c 100%); /* Orange accent */
+            border: none;
+            color: white;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+            transition: all 0.3s ease;
         }
         .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.6);
             color: white;
         }
-        .alert {
-            border-radius: 10px;
-            border: none;
+        .text-muted {
+            color: #a78bfa !important;
         }
-        .form-label {
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 8px;
+        .text-danger {
+            color: #f87171 !important;
         }
     </style>
 </head>
@@ -93,60 +100,47 @@
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
-                <i class="fas fa-user-shield"></i>
-                <h3>Admin Login</h3>
-                <p class="mb-0">MedShare Administration Panel</p>
+                <i class="fas fa-user-shield me-2"></i>
+                MedShare Admin Panel
             </div>
-            <div class="login-body">
+
+            <div class="card-body">
                 @if(session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="fas fa-exclamation-circle me-2"></i>
                         {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-
-                @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="fas fa-check-circle me-2"></i>
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
-
-                <form method="POST" action="{{ route('admin.login.submit') }}">
+                
+                <form action="{{ route('admin.login.post') }}" method="POST">
                     @csrf
                     
+                    <h5 class="text-center mb-4 text-white">Secure Login</h5>
+
+                    <!-- Username Field -->
                     <div class="mb-3">
-                        <label for="userName" class="form-label">
-                            <i class="fas fa-user me-2"></i>Username
-                        </label>
+                        <label for="userName" class="form-label visually-hidden">Username</label>
                         <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-user"></i>
-                            </span>
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
                             <input type="text" 
                                    class="form-control @error('userName') is-invalid @enderror" 
                                    id="userName" 
                                    name="userName" 
-                                   value="{{ old('userName') }}"
-                                   placeholder="Enter your username"
+                                   value="{{ old('userName') }}" 
+                                   placeholder="Enter your Username"
                                    required 
                                    autofocus>
                         </div>
                         @error('userName')
-                            <small class="text-danger">{{ $message }}</small>
+                            <small class="text-danger mt-1">{{ $message }}</small>
                         @enderror
                     </div>
 
+                    <!-- Password Field -->
                     <div class="mb-4">
-                        <label for="password" class="form-label">
-                            <i class="fas fa-lock me-2"></i>Password
-                        </label>
+                        <label for="password" class="form-label visually-hidden">Password</label>
                         <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-lock"></i>
-                            </span>
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
                             <input type="password" 
                                    class="form-control @error('password') is-invalid @enderror" 
                                    id="password" 
@@ -155,13 +149,13 @@
                                    required>
                         </div>
                         @error('password')
-                            <small class="text-danger">{{ $message }}</small>
+                            <small class="text-danger mt-1">{{ $message }}</small>
                         @enderror
                     </div>
 
-                    <div class="mb-3 form-check">
+                    <div class="mb-4 form-check">
                         <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                        <label class="form-check-label" for="remember">
+                        <label class="form-check-label text-white" for="remember">
                             Remember me
                         </label>
                     </div>
@@ -171,17 +165,17 @@
                     </button>
                 </form>
 
-                <div class="text-center mt-3">
+                <div class="text-center mt-4">
                     <small class="text-muted">
-                        <i class="fas fa-shield-alt me-1"></i>
-                        Secure Admin Access Only
+                        <i class="fas fa-lock me-1"></i>
+                        For Administrators Only
                     </small>
                 </div>
             </div>
         </div>
 
-        <div class="text-center mt-3">
-            <a href="{{ route('loginPage') }}" class="text-white text-decoration-none">
+        <div class="text-center mt-4">
+            <a href="{{ route('loginPage') }}" class="text-white text-decoration-none opacity-75 hover:opacity-100 transition duration-150">
                 <i class="fas fa-arrow-left me-2"></i>Back to Main Site
             </a>
         </div>
