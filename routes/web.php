@@ -176,6 +176,11 @@ Route::middleware(['auth'])->group(function () {
         return view('requests');
     })->name('requests')->middleware('auth');
 
+    // Main Reports Page
+    Route::get('/reportsPage', function () {
+        return view('reports');
+    })->name('reports')->middleware('auth');
+
 // =========================================================================
 // PASSWORD RESET ROUTES (No middleware)
 // =========================================================================

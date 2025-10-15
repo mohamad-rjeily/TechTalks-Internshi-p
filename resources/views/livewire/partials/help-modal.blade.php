@@ -1,15 +1,20 @@
 <div
     x-data="{ open: @entangle('showHelpModal') }"
     x-init="
+        const el = document.getElementById('helpModal');
+        if (!el) return;
         $watch('open', value => {
-            const el = document.getElementById('helpModal');
-            if (!el) return;
             if (value) {
                 bootstrap.Modal.getOrCreateInstance(el).show();
             } else {
                 const m = bootstrap.Modal.getInstance(el);
                 if (m) m.hide();
             }
+        });
+
+        el.addEventListener('hidden.bs.modal', () => {
+            open = false;
+            $wire.set('showHelpModal', false);
         });
     "
 >

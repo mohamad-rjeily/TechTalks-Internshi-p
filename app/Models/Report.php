@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Report extends Model
 {
@@ -12,6 +13,7 @@ class Report extends Model
     protected $fillable = [
         'reported_id',
         'target_id',
+        'target_type',
         'reason',
         'status',
         'admin_note',
@@ -22,4 +24,11 @@ class Report extends Model
     {
         return $this->belongsTo(User::class, 'reported_id');
     }
+
+    // Polymorphic relation to the reported target (User or Medicine)
+     public function target(): MorphTo
+    {
+        return $this->morphTo();
+    }
+    
 }

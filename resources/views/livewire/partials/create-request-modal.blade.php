@@ -1,9 +1,9 @@
 <div
     x-data="{ open: @entangle('showCreateModal') }"
     x-init="
+        const el = document.getElementById('createRequestModal');
+        if (!el) return;
         $watch('open', value => {
-            const el = document.getElementById('createRequestModal');
-            if (!el) return;
             if (value) {
                 bootstrap.Modal.getOrCreateInstance(el).show();
                 setTimeout(() => { el.querySelector('#medicine_id')?.focus(); }, 300);
@@ -11,6 +11,11 @@
                 const m = bootstrap.Modal.getInstance(el);
                 if (m) m.hide();
             }
+        });
+
+        el.addEventListener('hidden.bs.modal', () => {
+            open = false;
+            $wire.set('showCreateModal', false);
         });
     "
 >
