@@ -137,7 +137,7 @@
             
             <hr class="my-3" style="border-color: rgba(255, 255, 255, 0.2);">
             
-            <a class="nav-link" href="#" onclick="document.getElementById('logout-form').submit();">
+            <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">
                 <i class="fas fa-sign-out-alt me-3"></i>
                 Logout
             </a>
@@ -158,14 +158,14 @@
                 <div class="dropdown">
                     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                         <i class="fas fa-user-circle me-2"></i>
-                        {{ auth()->user() ? auth()->user()->name : 'Guest' }}
+                        {{ session('admin_username', 'Admin') }}
                     </button>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <a class="dropdown-item" href="#" onclick="document.getElementById('logout-form').submit();">
+                            <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">
                                 <i class="fas fa-sign-out-alt me-2"></i>Logout
                             </a>
                         </li>
@@ -210,8 +210,8 @@
         @yield('content')
     </div>
 
-    <!-- Logout Form -->
-    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+    <!-- Admin Logout Form -->
+    <form id="admin-logout-form" action="{{ route('admin.logout') }}" method="POST" class="d-none">
         @csrf
     </form>
 

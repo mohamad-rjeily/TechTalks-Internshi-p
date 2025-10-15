@@ -17,7 +17,17 @@ class AdminAuth
     {
         // Check if admin is logged in via session
         if (!session()->has('admin_id')) {
-            return redirect()->route('admin.login')->with('error', 'Please login to access admin panel');
+            // If it's an AJAX request, return unauthorized
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['message' => 'Unauthorized'], 401);
+            }
+            
+            // Store the intended URL so we can redirect back after login
+            session()->put('url.intended', $request->fullUrl());
+            
+            // Redirect to admin login page
+            return redirect()->route('admin.login')
+                ->with('error', 'Please login to access admin panel');
         }
 
         return $next($request);
