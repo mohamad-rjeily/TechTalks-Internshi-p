@@ -4,7 +4,6 @@
 
 @section('content')
 <div class="container py-4">
-    {{-- Requests Livewire Component --}}
-    @livewire('requests')
+    <livewire:requests />
 </div>
 @endsection
