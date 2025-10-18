@@ -13,12 +13,24 @@ class ReportController extends Controller
     public function indexWeb()
     {
         $reports = Report::with('reporter')->latest()->get();
+        
+        // Check if this is an admin request
+        if (request()->is('admin/*')) {
+            return view('admin.reports.index', compact('reports'));
+        }
+        
         return view('reports.index', compact('reports'));
     }
 
     public function createWeb()
     {
         $users = User::all();
+        
+        // Check if this is an admin request
+        if (request()->is('admin/*')) {
+            return view('admin.reports.create', compact('users'));
+        }
+        
         return view('reports.create', compact('users'));
     }
 
@@ -40,6 +52,12 @@ class ReportController extends Controller
     public function showWeb($id)
     {
         $report = Report::with('reporter')->findOrFail($id);
+        
+        // Check if this is an admin request
+        if (request()->is('admin/*')) {
+            return view('admin.reports.show', compact('report'));
+        }
+        
         return view('reports.show', compact('report'));
     }
 
@@ -47,6 +65,12 @@ class ReportController extends Controller
     {
         $report = Report::findOrFail($id);
         $users = User::all();
+        
+        // Check if this is an admin request
+        if (request()->is('admin/*')) {
+            return view('admin.reports.edit', compact('report','users'));
+        }
+        
         return view('reports.edit', compact('report','users'));
     }
 

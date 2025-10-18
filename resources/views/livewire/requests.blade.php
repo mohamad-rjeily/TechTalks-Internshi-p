@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div x-data="{ createOpen: @entangle('showCreateModal') }"
      x-init="
         $watch('createOpen', v => {
@@ -7,6 +8,9 @@
             else { const m = bootstrap.Modal.getInstance(el); if (m) m.hide(); }
         });
      ">
+=======
+<div>
+>>>>>>> origin/new-requests
     {{-- Page Header --}}
     <div class="card shadow border-0 rounded-3 mb-4">
         <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
@@ -15,7 +19,11 @@
             </h5>
             {{-- Create Request Button --}}
             <div class="d-flex justify-content-end ">
+<<<<<<< HEAD
                 <button class="btn btn-success shadow-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#createRequestModal" wire:click="openCreateModal">
+=======
+                <button class="btn btn-success shadow-sm rounded-pill" wire:click="openCreateModal">
+>>>>>>> origin/new-requests
                     <i class="bi bi-plus-circle me-1"></i> Create Request
                 </button>
             </div>

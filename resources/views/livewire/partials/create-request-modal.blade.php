@@ -1,9 +1,15 @@
 <div
     x-data="{ open: @entangle('showCreateModal') }"
     x-init="
+<<<<<<< HEAD
         $watch('open', value => {
             const el = document.getElementById('createRequestModal');
             if (!el) return;
+=======
+        const el = document.getElementById('createRequestModal');
+        if (!el) return;
+        $watch('open', value => {
+>>>>>>> origin/new-requests
             if (value) {
                 bootstrap.Modal.getOrCreateInstance(el).show();
                 setTimeout(() => { el.querySelector('#medicine_id')?.focus(); }, 300);
@@ -12,6 +18,14 @@
                 if (m) m.hide();
             }
         });
+<<<<<<< HEAD
+=======
+
+        el.addEventListener('hidden.bs.modal', () => {
+            open = false;
+            $wire.set('showCreateModal', false);
+        });
+>>>>>>> origin/new-requests
     "
 >
     <div wire:ignore.self class="modal fade" id="createRequestModal" tabindex="-1" aria-labelledby="createRequestLabel" aria-hidden="true">
@@ -72,6 +86,7 @@
             </div>
         </div>
     </div>
+<<<<<<< HEAD
     <script>
         document.addEventListener('livewire:init', () => {
             Livewire.on('openCreateRequest', () => {
@@ -80,4 +95,6 @@
             });
         });
     </script>
+=======
+>>>>>>> origin/new-requests
 </div>

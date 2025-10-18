@@ -54,11 +54,8 @@ class MyRequests extends Component
 
     private function loadRequests()
     {
-        $actorId = Auth::id() ?: (int) (\App\Models\User::value('id') ?? 0);
         $query = Request::with('medicine', 'donor')
-            ->when($actorId > 0, function ($q) use ($actorId) {
-                $q->where('requester_id', $actorId);
-            }); 
+            ->where('requester_id', Auth::id()); 
 
         if ($this->medicineFilter !== '') {
             $query->where('medicine_id', (int)$this->medicineFilter);
@@ -82,10 +79,7 @@ class MyRequests extends Component
     public function cancelRequest($id)
     {
         $req = Request::findOrFail($id);
-        // Temporarily skip policies when unauthenticated
-        if (Auth::check()) {
-            $this->authorize('cancel', $req);
-        }
+        $this->authorize('cancel', $req);
 
         $req->update(['status' => 'cancelled']);
 
@@ -102,9 +96,7 @@ class MyRequests extends Component
     public function completeRequest($id)
     {
         $req = Request::findOrFail($id);
-        if (Auth::check()) {
-            $this->authorize('complete', $req);
-        }
+        $this->authorize('complete', $req);
 
         $req->update(['status' => 'completed']);
 
@@ -142,9 +134,7 @@ class MyRequests extends Component
         ]);
 
         $req = Request::findOrFail($this->editRequestId);
-        if (Auth::check()) {
-            $this->authorize('update', $req);
-        }
+        $this->authorize('update', $req);
 
         $oldQty = $req->quantity_remaining;
 

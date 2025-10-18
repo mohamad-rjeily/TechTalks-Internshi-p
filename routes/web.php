@@ -185,6 +185,8 @@ Route::middleware(['admin.auth'])->prefix('admin')->name('admin.')->group(functi
         Route::delete('/{id}', [RequestController::class,'destroyWeb'])->name('destroy');
     });
 
+   
+
     // Reports Management (Admin Views: admin.reports.*)
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/', [ReportController::class, 'indexWeb'])->name('index');
@@ -237,4 +239,30 @@ Route::middleware(['auth'])->group(function () {
     
     // Audit logs routes
     Route::resource('audit-logs', AuditLogController::class)->only(['index', 'show']);
+
+    // Logout
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
+
+// Main requests page
+Route::get('/requestsPage', function () {
+    return view('requests');
+})->name('requests')->middleware('auth');
+
+// Main Reports Page
+Route::get('/reportsPage', function () {
+    return view('reports');
+})->name('reports')->middleware('auth');
+
+// =========================================================================
+// PASSWORD RESET ROUTES (No middleware)
+// =========================================================================
+
+// Forgot Password Form (Send Email)
+Route::post('/forgot-password', [ResetPasswordController::class, 'passwordEmail'])->name('password.email');
+
+// Reset Password Form (with token)
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'passwordReset'])->name('password.reset');
+
+// Handle Password Reset Update
+Route::post('/reset-password', [ResetPasswordController::class, 'passwordUpdate'])->name('password.update');

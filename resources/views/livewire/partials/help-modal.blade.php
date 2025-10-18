@@ -1,9 +1,15 @@
 <div
     x-data="{ open: @entangle('showHelpModal') }"
     x-init="
+<<<<<<< HEAD
         $watch('open', value => {
             const el = document.getElementById('helpModal');
             if (!el) return;
+=======
+        const el = document.getElementById('helpModal');
+        if (!el) return;
+        $watch('open', value => {
+>>>>>>> origin/new-requests
             if (value) {
                 bootstrap.Modal.getOrCreateInstance(el).show();
             } else {
@@ -11,6 +17,14 @@
                 if (m) m.hide();
             }
         });
+<<<<<<< HEAD
+=======
+
+        el.addEventListener('hidden.bs.modal', () => {
+            open = false;
+            $wire.set('showHelpModal', false);
+        });
+>>>>>>> origin/new-requests
     "
 >
     <div wire:ignore.self class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">

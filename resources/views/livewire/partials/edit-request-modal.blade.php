@@ -1,9 +1,15 @@
 <div
     x-data="{ open: @entangle('showEditModal') }"
     x-init="
+<<<<<<< HEAD
         $watch('open', value => {
             const el = document.getElementById('editRequestModal');
             if (!el) return;
+=======
+        const el = document.getElementById('editRequestModal');
+        if (!el) return;
+        $watch('open', value => {
+>>>>>>> origin/new-requests
             if (value) {
                 bootstrap.Modal.getOrCreateInstance(el).show();
                 setTimeout(() => { el.querySelector('#editQuantity')?.focus(); }, 300);
@@ -12,6 +18,14 @@
                 if (m) m.hide();
             }
         });
+<<<<<<< HEAD
+=======
+
+        el.addEventListener('hidden.bs.modal', () => {
+            open = false;
+            $wire.set('showEditModal', false);
+        });
+>>>>>>> origin/new-requests
     "
 >
     <div wire:ignore.self class="modal fade" id="editRequestModal" tabindex="-1" aria-labelledby="editRequestLabel" aria-hidden="true">
