@@ -19,7 +19,7 @@ Route::delete('/users/{id}', [UserController::class, 'destroyWeb'])->name('users
 
 
 Route::get('/medicines', [MedicineController::class, 'indexWeb'])->name('medicines.index');
-Route::get('/browse-medicines', [MedicineController::class, 'browse'])->name('medicines.browse');
+Route::get('/browse-medicines', [MedicineController::class, 'browse'])->name('medicines.browse')->middleware('auth');
 Route::get('/medicines/create', [MedicineController::class, 'create'])->name('medicines.create');
 Route::post('/medicines', [MedicineController::class, 'storeWeb'])->name('medicines.store');
 Route::get('/medicines/{id}', [MedicineController::class, 'showWeb'])->name('medicines.show');
@@ -30,7 +30,7 @@ Route::delete('/medicines/{id}', [MedicineController::class, 'destroyWeb'])->nam
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DonationController;
 
-Route::prefix('donations')->group(function() {
+Route::prefix('donations')->middleware('auth')->group(function() {
     Route::get('/', [DonationController::class, 'index'])->name('donations.index');
     Route::get('/create', [DonationController::class, 'create'])->name('donations.create');
     Route::post('/store', [DonationController::class, 'store'])->name('donations.store');
@@ -41,7 +41,7 @@ Route::prefix('donations')->group(function() {
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RequestController;
 
-Route::prefix('requests')->group(function(){
+Route::prefix('requests')->middleware('auth')->group(function(){
     Route::get('/', [RequestController::class,'indexWeb'])->name('requests.index');
     Route::get('/create', [RequestController::class,'createWeb'])->name('requests.create');
     Route::post('/', [RequestController::class,'storeWeb'])->name('requests.store');
@@ -106,9 +106,9 @@ Route::middleware('guest')->group(function(){
     Route::post('/reset-password', [ResetPasswordController::class,'passwordUpdate'])->name('password.update');
 });
 
-// Welcome route
+// Root route - redirect to dashboard
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('dashboard');
 });
 
 // A

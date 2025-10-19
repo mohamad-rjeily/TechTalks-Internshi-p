@@ -224,7 +224,16 @@ class Donations extends Component
         return Donation::with(['medicine','recipient'])
             ->when($actorId > 0, fn($q) => $q->where('donor_id', $actorId))
             ->when($this->medicineFilter, fn($q) => $q->where('medicine_id', (int)$this->medicineFilter))
-            ->when($this->statusFilter !== 'all', fn($q) => $q->where('status', $this->statusFilter))
+            ->when($this->statusFilter !== 'all', function($q) {
+                if ($this->statusFilter === 'available') {
+                    $q->where('status', 'available')
+                      ->where('expiry_date', '>', now());
+                } elseif ($this->statusFilter === 'unavailable') {
+                    $q->where('status', 'unavailable');
+                } elseif ($this->statusFilter === 'expired') {
+                    $q->where('expiry_date', '<=', now());
+                }
+            })
             ->when($this->fromDate, fn($q) => $q->whereDate('created_at', '>=', $this->fromDate))
             ->when($this->toDate, fn($q) => $q->whereDate('expiry_date', '<=', $this->toDate))
             ->latest();
@@ -235,6 +244,7 @@ class Donations extends Component
         $actorId = Auth::id() ?: (int)(User::value('id') ?? 0);
         return Donation::with(['medicine','donor'])
             ->where('status', 'available')
+            ->where('expiry_date', '>', now()) // Only show non-expired donations
             ->when($actorId > 0, fn($q) => $q->where('donor_id', '!=', $actorId)) // Exclude current user's donations
             ->when($this->medicineFilter, fn($q) => $q->where('medicine_id', (int)$this->medicineFilter))
             ->when($this->fromDate, fn($q) => $q->whereDate('created_at', '>=', $this->fromDate))

@@ -14,7 +14,7 @@ class RequestController extends Controller
     public function indexWeb()
     {
         // Return a simple view that includes the Livewire component
-        return view('requests.index')->with('showSuccessAlert', true);
+        return view('requests.index');
     }
 
     public function createWeb()

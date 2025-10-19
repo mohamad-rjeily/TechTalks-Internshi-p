@@ -18,7 +18,31 @@ class DatabaseSeeder extends Seeder
         // Seed a basic user for ownership if needed
         User::firstOrCreate(
             ['email' => 'test@example.com'],
-            ['name' => 'Test User']
+            [
+                'name' => 'Test User',
+                'password' => bcrypt('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+
+        // Create an admin user for easy access
+        User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin User',
+                'password' => bcrypt('admin123'),
+                'email_verified_at' => now(),
+            ]
+        );
+
+        // Create a regular user for testing
+        User::firstOrCreate(
+            ['email' => 'user@example.com'],
+            [
+                'name' => 'Regular User',
+                'password' => bcrypt('user123'),
+                'email_verified_at' => now(),
+            ]
         );
 
         // Seed categories
@@ -57,5 +81,8 @@ class DatabaseSeeder extends Seeder
 
         // Seed demo requests/users if missing
         $this->call(RequestDemoSeeder::class);
+        
+        // Seed test donations
+        $this->call(DonationSeeder::class);
     }
 }

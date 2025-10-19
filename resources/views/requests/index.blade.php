@@ -2,18 +2,18 @@
 
 @section('content')
     {{-- Success Notification --}}
-    @if(isset($showSuccessAlert) && $showSuccessAlert)
+    @if(session('success'))
         <div id="successAlert" class="position-fixed top-0 end-0 p-3" style="z-index: 9999; display: none;">
             <div class="alert alert-success border-0 shadow-sm rounded-pill d-flex align-items-center" style="min-width: 300px; max-width: 400px;">
                 <i class="bi bi-check-circle-fill text-success me-2"></i>
-                <div class="fw-semibold small">Request submitted successfully!</div>
+                <div class="fw-semibold small">{{ session('success') }}</div>
             </div>
         </div>
     @endif
 
     <livewire:requests />
 
-    @if(isset($showSuccessAlert) && $showSuccessAlert)
+    @if(session('success'))
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const alert = document.getElementById('successAlert');

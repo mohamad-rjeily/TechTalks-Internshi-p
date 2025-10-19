@@ -34,9 +34,20 @@
           <i data-lucide="file-text" class="mr-3 sidebar-icon"></i>
           <span class="sidebar-text">Audit Logs</span>
         </a>
+        
+        {{-- Admin Logout Button --}}
+        <div class="mt-8 pt-4 border-t border-emerald-600">
+          <form method="POST" action="{{ route('admin.logout') }}" class="w-full">
+            @csrf
+            <button type="submit" class="sidebar-link logout-button w-full flex items-center p-3 rounded-lg hover:bg-red-600 hover:text-white transition-all duration-200">
+              <i data-lucide="log-out" class="mr-3 sidebar-icon"></i>
+              <span class="sidebar-text">Logout</span>
+            </button>
+          </form>
+        </div>
       @else
         {{-- User Sidebar Links --}}
-        <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard') ? 'sidebar-active' : '' }} flex items-center p-3 rounded-lg">
+        <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard') || request()->is('/') ? 'sidebar-active' : '' }} flex items-center p-3 rounded-lg">
           <i data-lucide="layout-dashboard" class="mr-3 sidebar-icon"></i>
           <span class="sidebar-text">Dashboard</span>
         </a>
@@ -44,15 +55,15 @@
           <i data-lucide="pill" class="mr-3 sidebar-icon"></i>
           <span class="sidebar-text">Browse Medicines</span>
         </a>
-        <a href="{{ route('donations.index') }}" class="sidebar-link {{ request()->routeIs('donations.*') ? 'sidebar-active' : '' }} flex items-center p-3 rounded-lg">
+        <a href="{{ route('donations.index') }}" class="sidebar-link {{ request()->routeIs('donations.index') || request()->routeIs('donations.create') || request()->routeIs('donations.edit') ? 'sidebar-active' : '' }} flex items-center p-3 rounded-lg">
           <i data-lucide="heart-handshake" class="mr-3 sidebar-icon"></i>
           <span class="sidebar-text">Donations</span>
         </a>
-        <a href="{{route('requests')}}" class="sidebar-link flex items-center p-3 rounded-lg">
+        <a href="{{ route('requests.index') }}" class="sidebar-link {{ request()->routeIs('requests.index') || request()->routeIs('requests.create') || request()->routeIs('requests.edit') ? 'sidebar-active' : '' }} flex items-center p-3 rounded-lg">
           <i data-lucide="inbox" class="mr-3 sidebar-icon"></i>
           <span class="sidebar-text">Requests</span>
         </a>
-        <a href="{{route('reports')}}" class="sidebar-link flex items-center p-3 rounded-lg">
+        <a href="{{ route('reports.index') }}" class="sidebar-link {{ request()->routeIs('reports.index') || request()->routeIs('reports.create') || request()->routeIs('reports.edit') ? 'sidebar-active' : '' }} flex items-center p-3 rounded-lg">
           <i data-lucide="bar-chart-2" class="mr-3 sidebar-icon"></i>
           <span class="sidebar-text">Reports</span>
         </a>
@@ -60,6 +71,17 @@
           <i data-lucide="settings" class="mr-3 sidebar-icon"></i>
           <span class="sidebar-text">Settings</span>
         </a>
+        
+        {{-- User Logout Button --}}
+        <div class="mt-8 pt-4 border-t border-emerald-600">
+          <form method="POST" action="{{ route('logout') }}" class="w-full">
+            @csrf
+            <button type="submit" class="sidebar-link logout-button w-full flex items-center p-3 rounded-lg hover:bg-red-600 hover:text-white transition-all duration-200">
+              <i data-lucide="log-out" class="mr-3 sidebar-icon"></i>
+              <span class="sidebar-text">Logout</span>
+            </button>
+          </form>
+        </div>
       @endif
     </nav>
   </div>
@@ -100,6 +122,17 @@
   .sidebar-active .sidebar-icon,
   .sidebar-active .sidebar-text {
     color: inherit;
+  }
+
+  /* Logout button specific styles */
+  .logout-button {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+
+  .logout-button:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
   }
 </style>
 
