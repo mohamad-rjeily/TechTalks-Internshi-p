@@ -5,10 +5,51 @@ use App\Http\Controllers\ResetPasswordController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\UserController;
+
+
+// Web routes for Blade views
+Route::get('/users', [UserController::class, 'indexWeb'])->name('users.index');
+Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+Route::post('/users', [UserController::class, 'storeWeb'])->name('users.store');
+Route::get('/users/{id}', [UserController::class, 'showWeb'])->name('users.show');
+Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+Route::put('/users/{id}', [UserController::class, 'updateWeb'])->name('users.update');
+Route::delete('/users/{id}', [UserController::class, 'destroyWeb'])->name('users.destroy');
+
+
+
+Route::get('/medicines', [MedicineController::class, 'indexWeb'])->name('medicines.index');
+Route::get('/browse-medicines', [MedicineController::class, 'browse'])->name('medicines.browse');
+Route::get('/medicines/create', [MedicineController::class, 'create'])->name('medicines.create');
+Route::post('/medicines', [MedicineController::class, 'storeWeb'])->name('medicines.store');
+Route::get('/medicines/{id}', [MedicineController::class, 'showWeb'])->name('medicines.show');
+Route::get('/medicines/{id}/edit', [MedicineController::class, 'edit'])->name('medicines.edit');
+Route::put('/medicines/{id}', [MedicineController::class, 'updateWeb'])->name('medicines.update');
+Route::delete('/medicines/{id}', [MedicineController::class, 'destroyWeb'])->name('medicines.destroy');
+
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DonationController;
+
+Route::prefix('donations')->group(function() {
+    Route::get('/', [DonationController::class, 'index'])->name('donations.index');
+    Route::get('/create', [DonationController::class, 'create'])->name('donations.create');
+    Route::post('/store', [DonationController::class, 'store'])->name('donations.store');
+    Route::get('/{donation}/edit', [DonationController::class, 'edit'])->name('donations.edit');
+    Route::put('/{donation}', [DonationController::class, 'update'])->name('donations.update');
+    Route::delete('/{donation}', [DonationController::class, 'destroy'])->name('donations.destroy');
+});
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RequestController;
+
+Route::prefix('requests')->group(function(){
+    Route::get('/', [RequestController::class,'indexWeb'])->name('requests.index');
+    Route::get('/create', [RequestController::class,'createWeb'])->name('requests.create');
+    Route::post('/', [RequestController::class,'storeWeb'])->name('requests.store');
+    Route::get('/{id}', [RequestController::class,'showWeb'])->name('requests.show');
+    Route::get('/{id}/edit', [RequestController::class,'editWeb'])->name('requests.edit');
+    Route::put('/{id}', [RequestController::class,'updateWeb'])->name('requests.update');
+    Route::delete('/{id}', [RequestController::class,'destroyWeb'])->name('requests.destroy');
+});
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\AdminController;
@@ -22,9 +63,21 @@ use App\Http\Controllers\ProfileSettingsController;
 // Landing/Public Pages
 Route::get('/dashboard', [DashboardController::class, 'indexWeb'])->name('dashboard');
 
+// Reports routes
+Route::prefix('reports')->group(function() {
+    Route::get('/', [ReportController::class, 'indexWeb'])->name('reports.index');
+    Route::get('/create', [ReportController::class, 'createWeb'])->name('reports.create');
+    Route::post('/', [ReportController::class, 'storeWeb'])->name('reports.store');
+    Route::get('/{id}', [ReportController::class, 'showWeb'])->name('reports.show');
+    Route::get('/{id}/edit', [ReportController::class, 'editWeb'])->name('reports.edit');
+    Route::put('/{id}', [ReportController::class, 'updateWeb'])->name('reports.update');
+    Route::delete('/{id}', [ReportController::class, 'destroyWeb'])->name('reports.destroy');
+});
+
 // User Registration and Login Pages
 Route::get('/registerpage',[AuthController::class,'registerPage'])->name('registerPage');
 Route::get('/loginpage',[AuthController::class,'loginPage'])->name('loginPage');
+Route::get('/login',[AuthController::class,'loginPage'])->name('login');
 
 // Add GET route for /login to redirect to loginpage
 Route::get('/login', function() {
@@ -34,18 +87,31 @@ Route::get('/login', function() {
 // User Registration and Login Handlers
 Route::post('/register',[AuthController::class,'register'])->name('register');
 Route::post('/login',[AuthController::class,'login'])->name('login');
+Route::middleware('checkUser')->group(function(){
+    Route::get('/admin',[AuthController::class,'adminDashboard'])->name('admin');
+});
+Route::middleware('auth')->group(function(){
+    Route::get('/email/verify',[AuthController::class,'verifyNotice'])->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}',[AuthController::class,'verifyEmail'])->middleware('signed')->name('verification.verify');
+    Route::post('/email/verification-notification',[AuthController::class,'verifyHandler'] )->middleware('throttle:6,1')->name('verification.send');
+    Route::post('/logout',[AuthController::class,'logout'])->name('logout');
+});
 
-// User Profile
-Route::get('/userprofile/{user}', [UserController::class, 'showUser'])->name('user.show');
+Route::middleware('guest')->group(function(){
+    Route::get('/forgot-password', function () {
+        return view('auth.forgot-password');
+    })->name('password.request'); 
+    Route::post('/forgot-password',[ResetPasswordController::class,'passwordEmail'] )->name('password.email');
+    Route::get('/reset-password/{token}', [ResetPasswordController::class,'passwordReset'])->name('password.reset');
+    Route::post('/reset-password', [ResetPasswordController::class,'passwordUpdate'])->name('password.update');
+});
 
-// Public Donations Route
-Route::get('/donations', [DonationController::class, 'index'])->name('donations.index');
+// Welcome route
+Route::get('/', function () {
+    return view('welcome');
+});
 
-
-// =========================================================================
-// ADMIN AUTHENTICATION ROUTES
-// =========================================================================
-
+// A
 // Admin Login Form (GET request to show the form)
 Route::get('/admin/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
 
@@ -118,6 +184,8 @@ Route::middleware(['admin.auth'])->prefix('admin')->name('admin.')->group(functi
         Route::delete('/{id}', [RequestController::class,'destroyWeb'])->name('destroy');
     });
 
+   
+
     // Reports Management (Admin Views: admin.reports.*)
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/', [ReportController::class, 'indexWeb'])->name('index');
@@ -168,9 +236,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->middleware(['signed'])->name('verification.verify');
     Route::post('/email/verification-notification', [AuthController::class, 'verifyHandler'])->middleware(['throttle:6,1'])->name('verification.send');
     
+    // Audit logs routes
+    Route::resource('audit-logs', AuditLogController::class)->only(['index', 'show']);
+
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
+
+// Main requests page
+Route::get('/requestsPage', function () {
+    return view('requests');
+})->name('requests')->middleware('auth');
+
+// Main Reports Page
+Route::get('/reportsPage', function () {
+    return view('reports');
+})->name('reports')->middleware('auth');
 
 // =========================================================================
 // PASSWORD RESET ROUTES (No middleware)
