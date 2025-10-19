@@ -38,6 +38,9 @@ Route::post('/login',[AuthController::class,'login'])->name('login');
 // User Profile
 Route::get('/userprofile/{user}', [UserController::class, 'showUser'])->name('user.show');
 
+// Public Donations Route
+Route::get('/donations', [DonationController::class, 'index'])->name('donations.index');
+
 
 // =========================================================================
 // ADMIN AUTHENTICATION ROUTES
