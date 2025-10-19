@@ -22,7 +22,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form method="POST" action="{{ route('delete_user_account') }}">
+                <form method="POST" action="{{ route('delete_account') }}">
                     @csrf
                     <button type="submit" class="btn btn-danger">Yes, delete my account</button>
                 </form>
