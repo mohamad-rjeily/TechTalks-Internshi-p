@@ -41,7 +41,7 @@ class ReportController extends Controller
             'target_id' => 'required',
             'reason' => 'required|string',
             'status' => ['required', Rule::in(['open','resolved'])],
-            'admin_note' => 'nullable|string',
+            'admin_notes' => 'nullable|string', // CORRECT: plural to match database
         ]);
 
         Report::create($validated);
@@ -84,7 +84,7 @@ class ReportController extends Controller
             'target_id' => 'required',
             'reason' => 'required|string',
             'status' => ['required', Rule::in(['open','resolved'])],
-            'admin_note' => 'nullable|string',
+            'admin_notes' => 'nullable|string', // CORRECT: plural to match database
         ]);
 
         $report = Report::findOrFail($id);
@@ -102,7 +102,7 @@ class ReportController extends Controller
         $report = Report::findOrFail($id);
         $report->update([
             'status' => 'resolved',
-            'admin_notes' => $request->input('admin_note'), // Corrected to use 'admin_notes'
+            'admin_notes' => $request->input('admin_notes'), // CORRECT: plural to match database
         ]);
     
         return redirect()->route('admin.reports.index')->with('success', 'Report resolved successfully.');
@@ -130,7 +130,7 @@ class ReportController extends Controller
             'target_id' => 'required',
             'reason' => 'required|string',
             'status' => ['required', Rule::in(['open','resolved'])],
-            'admin_note' => 'nullable|string',
+            'admin_notes' => 'nullable|string', // CORRECT: plural to match database
         ]);
 
         $report = Report::create($validated);
@@ -152,7 +152,7 @@ class ReportController extends Controller
             'target_id' => 'required',
             'reason' => 'required|string',
             'status' => ['required', Rule::in(['open','resolved'])],
-            'admin_note' => 'nullable|string',
+            'admin_notes' => 'nullable|string', // CORRECT: plural to match database
         ]);
 
         $report = Report::findOrFail($id);

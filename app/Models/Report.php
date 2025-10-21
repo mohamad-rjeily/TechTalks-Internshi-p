@@ -16,7 +16,7 @@ class Report extends Model
         'target_type',
         'reason',
         'status',
-        'admin_note',
+        'admin_notes', // CHANGED: singular to plural
     ];
 
     // Relation to the user who reported
@@ -30,5 +30,4 @@ class Report extends Model
     {
         return $this->morphTo();
     }
-    
 }
