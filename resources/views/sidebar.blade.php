@@ -59,11 +59,11 @@
           <i data-lucide="heart-handshake" class="mr-3 sidebar-icon"></i>
           <span class="sidebar-text">Donations</span>
         </a>
-        <a href="{{ route('requests.index') }}" class="sidebar-link {{ request()->routeIs('requests.index') || request()->routeIs('requests.create') || request()->routeIs('requests.edit') ? 'sidebar-active' : '' }} flex items-center p-3 rounded-lg">
+        <a href="{{ route('requests') }}" class="sidebar-link {{ request()->routeIs('requests') ? 'sidebar-active' : '' }} flex items-center p-3 rounded-lg">
           <i data-lucide="inbox" class="mr-3 sidebar-icon"></i>
           <span class="sidebar-text">Requests</span>
         </a>
-        <a href="{{ route('reports.index') }}" class="sidebar-link {{ request()->routeIs('reports.index') || request()->routeIs('reports.create') || request()->routeIs('reports.edit') ? 'sidebar-active' : '' }} flex items-center p-3 rounded-lg">
+        <a href="{{ route('reports') }}" class="sidebar-link {{ request()->routeIs('reports') ? 'sidebar-active' : '' }} flex items-center p-3 rounded-lg">
           <i data-lucide="bar-chart-2" class="mr-3 sidebar-icon"></i>
           <span class="sidebar-text">Reports</span>
         </a>

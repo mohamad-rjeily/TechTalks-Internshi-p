@@ -245,12 +245,12 @@ Route::middleware(['auth'])->group(function () {
 
 // Main requests page
 Route::get('/requestsPage', function () {
-    return view('requests');
+    return view('requests.requests');
 })->name('requests')->middleware('auth');
 
 // Main Reports Page
 Route::get('/reportsPage', function () {
-    return view('reports');
+    return view('reports.reports');
 })->name('reports')->middleware('auth');
 
 // =========================================================================
