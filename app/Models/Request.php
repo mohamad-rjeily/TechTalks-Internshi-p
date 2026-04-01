@@ -13,7 +13,6 @@ class Request extends Model
         'medicine_id',
         'requester_id',
         'donor_id',
-        'quantity_requested',
         'quantity_remaining',
         'message',
         'status',
@@ -39,3 +38,4 @@ class Request extends Model
         return $this->belongsTo(User::class, 'donor_id');
     }
 }
+

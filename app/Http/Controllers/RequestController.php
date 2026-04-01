@@ -13,46 +13,51 @@ class RequestController extends Controller
     // ========================= WEB =========================
     public function indexWeb()
     {
-        $requests = RequestModel::with(['medicine', 'requester', 'donor'])->latest()->get();
-        return view('requests.index', compact('requests'));
+        // Return a simple view that includes the Livewire component
+        return view('requests.index');
     }
 
     public function createWeb()
     {
-        $medicines = Medicine::all();
-        $users = User::all();
-        return view('requests.create', compact('medicines', 'users'));
+        // Redirect to requests page where the create modal can be opened
+        return redirect()->route('requests.index');
     }
 
     public function storeWeb(HttpRequest $request)
     {
         $validated = $request->validate([
             'medicine_id' => 'required|exists:medicines,id',
-            'requester_id' => 'required|exists:users,id',
-            'donor_id' => 'nullable|exists:users,id',
             'quantity_requested' => 'required|integer|min:1',
-            'quantity_remaining' => 'required|integer|min:0',
             'message' => 'nullable|string',
-            'status' => ['required', Rule::in(['pending','approved','rejected','cancelled'])],
         ]);
 
-        RequestModel::create($validated);
+        $requesterId = auth()->id() ?? optional(User::first())->id;
+
+        RequestModel::create([
+            'medicine_id' => $validated['medicine_id'],
+            'requester_id' => $requesterId,
+            'donor_id' => null,
+            // Store remaining as the requested amount initially
+            'quantity_remaining' => $validated['quantity_requested'],
+            'message' => $validated['message'] ?? null,
+            'status' => 'pending',
+        ]);
 
         return redirect()->route('requests.index')->with('success','Request created successfully');
     }
 
     public function showWeb($id)
     {
-        $request = RequestModel::with(['medicine', 'requester', 'donor'])->findOrFail($id);
-        return view('requests.show', compact('request'));
+        // For now, redirect to requests index
+        // You can implement a detailed view later if needed
+        return redirect()->route('requests.index');
     }
 
     public function editWeb($id)
     {
-        $request = RequestModel::findOrFail($id);
-        $medicines = Medicine::all();
-        $users = User::all();
-        return view('requests.edit', compact('request', 'medicines', 'users'));
+        // For now, redirect to requests index
+        // You can implement edit functionality in Livewire later if needed
+        return redirect()->route('requests.index');
     }
 
     public function updateWeb(HttpRequest $request, $id)

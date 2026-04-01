@@ -9,6 +9,7 @@ class Donation extends Model
 {
     use HasFactory;
 
+   
     protected $fillable = [
         'medicine_id',
         'donor_id',
@@ -19,14 +20,6 @@ class Donation extends Model
         'status',
         'expiry_date',
     ];
-
-    protected $casts = [
-    'expiry_date' => 'datetime',
-    'confirmed_at' => 'datetime',
-    'created_at' => 'datetime',
-    'updated_at' => 'datetime',
-];
-
 
     // Relations
     public function medicine()

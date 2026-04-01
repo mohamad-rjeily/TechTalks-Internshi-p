@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Donation;
+use App\Models\Medicine;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class DonationController extends Controller
@@ -15,65 +17,15 @@ class DonationController extends Controller
         return view('donations.index', compact('donations'));
     }
 
-    public function create()
-    {
-        return view('donations.create');
-    }
+    // create handled by Livewire modal
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'medicine_id' => 'required|exists:medicines,id',
-            'donor_id' => 'required|exists:users,id',
-            'recipient_id' => 'nullable|exists:users,id',
-            'quantity' => 'required|integer',
-            'status' => 'required|in:available,unavailable',
-            'expiry_date' => 'required|date',
-            'notes' => 'nullable|string',
-        ]);
+    // store handled by Livewire modal
 
-        $donation = Donation::create([
-            'medicine_id'   => $request->medicine_id,
-            'donor_id'      => $request->donor_id,
-            'recipient_id'  => $request->recipient_id,
-            'quantity'      => $request->quantity,
-            'status'        => $request->status,
-            'expiry_date'   => $request->expiry_date,
-            'notes'         => $request->notes,
-        ]);
+    // edit handled by Livewire modal
 
-        return redirect()->route('donations.index')->with('success', 'Donation created successfully!');
-    }
+    // update handled by Livewire modal
 
-    public function edit(Donation $donation)
-    {
-        return view('donations.edit', compact('donation'));
-    }
-
-    public function update(Request $request, Donation $donation)
-    {
-        $request->validate([
-            'medicine_id' => 'sometimes|exists:medicines,id',
-            'donor_id' => 'sometimes|exists:users,id',
-            'recipient_id' => 'sometimes|exists:users,id',
-            'quantity' => 'sometimes|integer',
-            'status' => 'sometimes|in:available,unavailable',
-            'expiry_date' => 'sometimes|date',
-            'notes' => 'nullable|string',
-        ]);
-
-        $donation->update($request->only([
-            'medicine_id', 'donor_id', 'recipient_id', 'quantity', 'status', 'expiry_date', 'notes'
-        ]));
-
-        return redirect()->route('donations.index')->with('success', 'Donation updated successfully!');
-    }
-
-    public function destroy(Donation $donation)
-    {
-        $donation->delete();
-        return redirect()->route('donations.index')->with('success', 'Donation deleted successfully!');
-    }
+    // destroy handled by Livewire UI
 
     // -------- API Methods --------
 

@@ -89,6 +89,15 @@ class MedicineController extends Controller
     // WEB METHODS (Blade)
     // =============================
 
+    /**
+     * Public browse page for end users.
+     */
+    public function browse()
+    {
+        $medicines = Medicine::with('category')->get();
+        return view('medicines.browse', compact('medicines'));
+    }
+
     public function indexWeb()
     {
         $medicines = Medicine::with('category')->get();
